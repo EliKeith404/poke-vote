@@ -52,6 +52,7 @@ const Home: NextPage = () => {
         <title>PokeVote</title>
         <meta property="og:title" content="PokeVote" />
         <meta name="description" content="1v1 Vote on Roundest Pokemon" />
+        <meta name="image" property="og:image" content="/assets/preview.png" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
