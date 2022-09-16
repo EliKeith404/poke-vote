@@ -1,0 +1,14 @@
+// src/server/router/index.ts
+import { createRouter } from './context';
+import superjson from 'superjson';
+
+import { pokeRouter } from './pokeRouter';
+import { protectedExampleRouter } from './protected-example-router';
+
+export const appRouter = createRouter()
+  .transformer(superjson)
+  .merge('poke.', pokeRouter)
+  .merge('auth.', protectedExampleRouter);
+
+// export type definition of API
+export type AppRouter = typeof appRouter;
