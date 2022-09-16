@@ -46,8 +46,8 @@ export const pokeRouter = createRouter()
       const [first, second] = getOptionsForVote();
 
       const bothPokemon = await Promise.all([
-        api.getPokemonById(first),
-        api.getPokemonById(second),
+        api.getPokemonById(first || 0),
+        api.getPokemonById(second || 0),
       ]);
 
       if (bothPokemon.length !== 2) {

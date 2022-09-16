@@ -4,9 +4,8 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import type React from 'react';
 import { inferQueryOutput, trpc } from '../utils/trpc';
-import { getOptionsForVote } from '../utils/getRandomPokemon';
 
-const Home: NextPage = (props) => {
+const Home: NextPage = () => {
   const [mounted, isMounted] = useState(false);
 
   useEffect(() => {
@@ -26,9 +25,9 @@ const Home: NextPage = (props) => {
   const voteMutation = trpc.useMutation(['poke.cast-vote']);
 
   const voteForRoundest = (selected: number | undefined) => {
-    if (!pokemon) return;
+    if (!pokemon?.first || !pokemon?.second || !selected) return;
 
-    if (selected === pokemon.first?.id) {
+    if (selected === pokemon.first.id) {
       voteMutation.mutate({
         votedFor: pokemon.first,
         votedAgainst: pokemon.second,
