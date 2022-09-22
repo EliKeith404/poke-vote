@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import type React from 'react';
 import { inferQueryOutput, trpc } from '../utils/trpc';
 
-const Home: NextPage = () => {
+const Home: NextPage = (props) => {
   const [mounted, isMounted] = useState(false);
 
   useEffect(() => {
@@ -24,8 +24,8 @@ const Home: NextPage = () => {
 
   const voteMutation = trpc.useMutation(['poke.cast-vote']);
 
-  const voteForRoundest = (selected: number | undefined) => {
-    if (!pokemon?.first || !pokemon?.second || !selected) return;
+  const voteForRoundest = (selected: number) => {
+    if (!pokemon) return; // Early escape if pokemon could not be fetched
 
     if (selected === pokemon.first.id) {
       voteMutation.mutate({
@@ -65,7 +65,7 @@ const Home: NextPage = () => {
           {mounted && (
             <PokemonListing
               pokemon={pokemon.first}
-              vote={() => voteForRoundest(pokemon.first?.id)}
+              vote={() => voteForRoundest(pokemon.first.id)}
             />
           )}
           <div>
@@ -74,7 +74,7 @@ const Home: NextPage = () => {
           {mounted && (
             <PokemonListing
               pokemon={pokemon.second}
-              vote={() => voteForRoundest(pokemon.second?.id)}
+              vote={() => voteForRoundest(pokemon.second.id)}
             />
           )}
         </div>
@@ -93,11 +93,11 @@ const PokemonListing: React.FC<{
 }> = ({ pokemon, vote }) => {
   return (
     <div className="w-64 h-64 flex flex-col justify-center items-center bg-red-800">
-      <h2 className="text-xl capitalize">{pokemon?.name}</h2>
+      <h2 className="text-xl capitalize">{pokemon.name}</h2>
       <div className="m-[-1rem]">
         <Image
-          src={pokemon?.spriteUrl || ''}
-          alt={`${pokemon?.name}'s sprite image`}
+          src={pokemon.spriteUrl}
+          alt={`${pokemon.name}'s sprite image`}
           width={192}
           height={192}
         />
