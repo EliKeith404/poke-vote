@@ -46,6 +46,8 @@ const Home: NextPage = (props) => {
     return <div>Loading...</div>;
   }
 
+  const fetchingNext = voteMutation.isLoading || isLoading;
+
   return (
     <>
       <Head>
@@ -58,14 +60,15 @@ const Home: NextPage = (props) => {
 
       <main className="h-screen w-screen flex flex-col justify-center items-center">
         <div>
-          <p>Which Pokemon is rounder?</p>
+          <p>Which Pokemon is Rounder?</p>
         </div>
         <div className="p-4" />
-        <div className="flex justify-between items-center border w-full max-w-[620px] p-6">
+        <div className="flex justify-between items-center border rounded-xl w-full max-w-[620px] p-6 animate-fade-in">
           {mounted && (
             <PokemonListing
               pokemon={pokemon.first}
               vote={() => voteForRoundest(pokemon.first.id)}
+              disabled={fetchingNext}
             />
           )}
           <div>
@@ -75,6 +78,7 @@ const Home: NextPage = (props) => {
             <PokemonListing
               pokemon={pokemon.second}
               vote={() => voteForRoundest(pokemon.second.id)}
+              disabled={fetchingNext}
             />
           )}
         </div>
@@ -90,21 +94,29 @@ type ServerType = inferQueryOutput<'poke.get-pokemon-pair'>['first'];
 const PokemonListing: React.FC<{
   pokemon: ServerType;
   vote: () => void;
-}> = ({ pokemon, vote }) => {
+  disabled: boolean;
+}> = ({ pokemon, vote, disabled }) => {
   return (
-    <div className="w-64 h-64 flex flex-col justify-center items-center bg-red-800">
-      <h2 className="text-xl capitalize">{pokemon.name}</h2>
-      <div className="m-[-1rem]">
-        <Image
-          src={pokemon.spriteUrl}
-          alt={`${pokemon.name}'s sprite image`}
-          width={192}
-          height={192}
-        />
+    <div className={`w-64 h-64 flex flex-col justify-center items-center `}>
+      <div
+        className={`flex flex-col justify-center items-center transition-opacity ${
+          disabled && 'opacity-0'
+        }`}
+      >
+        <h2 className="text-xl capitalize">{pokemon.name}</h2>
+        <div className="m-[-1rem] animate-fade-in">
+          <Image
+            src={pokemon.spriteUrl}
+            alt={`${pokemon.name}'s sprite image`}
+            width={192}
+            height={192}
+          />
+        </div>
       </div>
       <button
-        className="py-1 px-4 rounded-xl shadow-xl bg-slate-400 z-10"
+        className={`py-1 px-4 rounded-xl shadow-xl bg-slate-400 z-10`}
         onClick={() => vote()}
+        disabled={disabled}
       >
         Vote
       </button>
