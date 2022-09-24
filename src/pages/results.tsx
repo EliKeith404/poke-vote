@@ -1,23 +1,52 @@
-import { NextPage } from 'next';
+import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 import React from 'react';
-import { inferQueryOutput, trpc } from '../utils/trpc';
+import { prisma } from '../server/db/client';
+import { inferAsyncReturnType } from '@trpc/server';
 
-const Results: NextPage = (props) => {
-  // Get Pokemon ordered by most votesFor
-  const {
-    data: rankedPokemon,
-    refetch,
-    isLoading,
-  } = trpc.useQuery(['poke.get-ranking'], {
-    refetchInterval: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
+// Get Pokemon from database, ordered by vote count
+const getRankedPokemon = async () => {
+  return await prisma.pokemon.findMany({
+    orderBy: { votesFor: { _count: 'desc' } },
+    select: {
+      id: true,
+      name: true,
+      spriteUrl: true,
+      _count: {
+        select: { votesFor: true, votesAgainst: true },
+      },
+    },
+    take: 100,
   });
+};
 
-  if (isLoading || !rankedPokemon || !rankedPokemon[0]) {
-    return <div>Loading...</div>;
-  }
+// Get type of object returned from the database
+type PokemonQueryResult = inferAsyncReturnType<typeof getRankedPokemon>;
+
+const calcVotePercent = (pokemon: PokemonQueryResult[0]) => {
+  const { votesFor, votesAgainst } = pokemon._count;
+  if (votesFor + votesAgainst === 0) return 0;
+
+  return (votesFor / (votesFor + votesAgainst)) * 100;
+};
+
+export const getStaticProps: GetServerSideProps = async () => {
+  // Get top 10 pokemon based on votesFor count
+  const topTen = await getRankedPokemon();
+  const HOUR_IN_SEC = 1 * 60 * 60;
+
+  return {
+    props: {
+      rankedPokemon: topTen,
+    },
+    revalidate: HOUR_IN_SEC,
+  };
+};
+
+const Results: React.FC<{ rankedPokemon: PokemonQueryResult }> = ({
+  rankedPokemon,
+}) => {
+  if (!rankedPokemon) return <div>Loading...</div>;
 
   return (
     <div>
@@ -33,6 +62,7 @@ const Results: NextPage = (props) => {
 
             return difference;
           })
+          .slice(0, 10)
           .map((pokemon, i) => {
             return <PokemonListItem pokemon={pokemon} rank={i + 1} key={i} />;
           })}
@@ -43,10 +73,11 @@ const Results: NextPage = (props) => {
 
 export default Results;
 
-type PokemonQueryResult = inferQueryOutput<'poke.get-ranking'>[0];
+////////////////////////////////
+// Pokemon Ranking List Item
 
 const PokemonListItem: React.FC<{
-  pokemon: PokemonQueryResult;
+  pokemon: PokemonQueryResult[0];
   rank: number;
 }> = ({ pokemon, rank }) => {
   return (
@@ -67,11 +98,4 @@ const PokemonListItem: React.FC<{
       <p className="px-5 m-auto">{calcVotePercent(pokemon).toFixed(2)}%</p>
     </div>
   );
-};
-
-const calcVotePercent = (pokemon: PokemonQueryResult) => {
-  const { votesFor, votesAgainst } = pokemon._count;
-  if (votesFor + votesAgainst === 0) return 0;
-
-  return (votesFor / (votesFor + votesAgainst)) * 100;
 };
