@@ -25,6 +25,24 @@ export const pokeRouter = createRouter()
       return pokemon;
     },
   })
+  .query('get-ranking', {
+    async resolve() {
+      const topTen = await prisma.pokemon.findMany({
+        orderBy: { votesFor: { _count: 'desc' } },
+        select: {
+          id: true,
+          name: true,
+          spriteUrl: true,
+          _count: {
+            select: { votesFor: true, votesAgainst: true },
+          },
+        },
+        take: 10,
+      });
+
+      return topTen;
+    },
+  })
   .mutation('cast-vote', {
     input: z.object({
       votedFor: z.object({
