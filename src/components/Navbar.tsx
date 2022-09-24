@@ -3,7 +3,7 @@ import React from 'react';
 
 const Navbar = () => {
   return (
-    <div className="w-full absolute block py-5">
+    <div className="w-full absolute block py-10">
       <ul className="flex justify-center">
         <li className="px-5">
           <Link href={'/'}>Home</Link>

@@ -32,12 +32,12 @@ const calcVotePercent = (pokemon: PokemonQueryResult[0]) => {
 
 export const getStaticProps: GetServerSideProps = async () => {
   // Get top 10 pokemon based on votesFor count
-  const topTen = await getRankedPokemon();
+  const rankedPokemon = await getRankedPokemon();
   const HOUR_IN_SEC = 1 * 60 * 60;
 
   return {
     props: {
-      rankedPokemon: topTen,
+      rankedPokemon: rankedPokemon,
     },
     revalidate: HOUR_IN_SEC,
   };
@@ -49,8 +49,8 @@ const Results: React.FC<{ rankedPokemon: PokemonQueryResult }> = ({
   if (!rankedPokemon) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h1 className="text-4xl py-10 mx-10">Results</h1>
+    <div className="max-w-[900px] mx-auto pt-10">
+      <h1 className="text-4xl pt-10 pb-4">Results</h1>
       <div>
         {rankedPokemon
           .sort((a, b) => {
@@ -81,8 +81,8 @@ const PokemonListItem: React.FC<{
   rank: number;
 }> = ({ pokemon, rank }) => {
   return (
-    <div className="grid grid-cols-4 md:grid-cols-6 border mx-10 px-10">
-      <span className="md:col-start-2 m-auto">#{rank}</span>
+    <div className="grid grid-cols-4  border border-slate-500 mx-auto px-10">
+      <span className=" m-auto">#{rank}</span>
       <div>
         <Image
           src={pokemon.spriteUrl}
