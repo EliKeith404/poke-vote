@@ -50,8 +50,8 @@ const PokemonListItem: React.FC<{
   rank: number;
 }> = ({ pokemon, rank }) => {
   return (
-    <div className="grid grid-cols-6 border mx-10 px-10">
-      <span className="col-start-2 m-auto">#{rank}</span>
+    <div className="grid grid-cols-4 md:grid-cols-6 border mx-10 px-10">
+      <span className="md:col-start-2 m-auto">#{rank}</span>
       <div>
         <Image
           src={pokemon.spriteUrl}
@@ -62,7 +62,7 @@ const PokemonListItem: React.FC<{
       </div>
       <div className="flex flex-col items-center px-5 m-auto">
         <p className="text-xs">{pokemon.id}</p>
-        <p className="capitalize text-lg">{pokemon.name}</p>
+        <p className="capitalize md:text-lg">{pokemon.name}</p>
       </div>
       <p className="px-5 m-auto">{calcVotePercent(pokemon).toFixed(2)}%</p>
     </div>
