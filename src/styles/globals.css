@@ -12,4 +12,7 @@
 }
 
 @layer utilities {
+  .image-wrapper {
+    image-rendering: pixelated;
+  }
 }

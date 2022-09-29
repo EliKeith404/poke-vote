@@ -110,6 +110,7 @@ const PokemonListing: React.FC<{
             alt={`${pokemon.name}'s sprite image`}
             width={192}
             height={192}
+            style={{ imageRendering: 'pixelated' }}
           />
         </div>
       </div>

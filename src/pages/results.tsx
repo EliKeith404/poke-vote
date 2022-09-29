@@ -30,16 +30,15 @@ const calcVotePercent = (pokemon: PokemonQueryResult[0]) => {
   return (votesFor / (votesFor + votesAgainst)) * 100;
 };
 
-export const getStaticProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
   // Get top 10 pokemon based on votesFor count
   const rankedPokemon = await getRankedPokemon();
-  const HOUR_IN_SEC = 1 * 60 * 60;
+  //const HOUR_IN_SEC = 1 * 60 * 60;
 
   return {
     props: {
       rankedPokemon: rankedPokemon,
     },
-    revalidate: HOUR_IN_SEC,
   };
 };
 
@@ -82,13 +81,14 @@ const PokemonListItem: React.FC<{
 }> = ({ pokemon, rank }) => {
   return (
     <div className="grid grid-cols-4  border border-slate-500 mx-auto px-10">
-      <span className=" m-auto">#{rank}</span>
-      <div>
+      <span className="m-auto">#{rank}</span>
+      <div className="m-[-1rem]">
         <Image
           src={pokemon.spriteUrl}
           alt={`${pokemon.name}'s Sprite Image`}
-          width={128}
-          height={128}
+          width={192}
+          height={192}
+          style={{ imageRendering: 'pixelated' }}
         />
       </div>
       <div className="flex flex-col items-center px-5 m-auto">
