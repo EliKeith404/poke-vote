@@ -42,9 +42,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   };
 };
 
-const Results: React.FC<{ rankedPokemon: PokemonQueryResult }> = ({
-  rankedPokemon,
-}) => {
+const Results = ({ rankedPokemon }: { rankedPokemon: PokemonQueryResult }) => {
   if (!rankedPokemon) return <div>Loading...</div>;
 
   return (
@@ -75,10 +73,13 @@ export default Results;
 ////////////////////////////////
 // Pokemon Ranking List Item
 
-const PokemonListItem: React.FC<{
+const PokemonListItem = ({
+  pokemon,
+  rank,
+}: {
   pokemon: PokemonQueryResult[0];
   rank: number;
-}> = ({ pokemon, rank }) => {
+}) => {
   return (
     <div className="grid grid-cols-4  border border-slate-500 mx-auto px-10">
       <span className="m-auto">#{rank}</span>

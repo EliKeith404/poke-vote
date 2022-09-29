@@ -12,6 +12,7 @@ const Home: NextPage = (props) => {
     isMounted(true);
   }, []);
 
+  // Grab 2 Pokemon from database
   const {
     data: pokemon,
     refetch,
@@ -22,9 +23,10 @@ const Home: NextPage = (props) => {
     refetchOnWindowFocus: false,
   });
 
+  // Vote Handler
   const voteMutation = trpc.useMutation(['poke.cast-vote']);
 
-  const voteForRoundest = (selected: number) => {
+  const handleVote = (selected: number) => {
     if (!pokemon) return; // Early escape if pokemon could not be fetched
 
     if (selected === pokemon.first.id) {
@@ -67,7 +69,7 @@ const Home: NextPage = (props) => {
           {mounted && (
             <PokemonListing
               pokemon={pokemon.first}
-              vote={() => voteForRoundest(pokemon.first.id)}
+              vote={() => handleVote(pokemon.first.id)}
               disabled={fetchingNext}
             />
           )}
@@ -77,7 +79,7 @@ const Home: NextPage = (props) => {
           {mounted && (
             <PokemonListing
               pokemon={pokemon.second}
-              vote={() => voteForRoundest(pokemon.second.id)}
+              vote={() => handleVote(pokemon.second.id)}
               disabled={fetchingNext}
             />
           )}
@@ -91,11 +93,15 @@ export default Home;
 
 type ServerType = inferQueryOutput<'poke.get-pokemon-pair'>['first'];
 
-const PokemonListing: React.FC<{
+const PokemonListing = ({
+  pokemon,
+  vote,
+  disabled,
+}: {
   pokemon: ServerType;
   vote: () => void;
   disabled: boolean;
-}> = ({ pokemon, vote, disabled }) => {
+}) => {
   return (
     <div className={`w-64 h-64 flex flex-col justify-center items-center`}>
       <div
