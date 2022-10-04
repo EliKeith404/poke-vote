@@ -34,6 +34,14 @@ model Vote {
     votedAgainst   Pokemon @relation("votesAgainst", fields: [votedAgainstId], references: [id])
 }
 
+model Category {
+    id        String  @id @default(cuid())
+    name      String
+    available Boolean
+    userId    String? @unique
+    user      User?   @relation(fields: [userId], references: [id])
+}
+
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -62,13 +70,14 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+    id               String    @id @default(cuid())
+    name             String?
+    email            String?   @unique
+    emailVerified    DateTime?
+    image            String?
+    assignedCategory Category?
+    accounts         Account[]
+    sessions         Session[]
 }
 
 model VerificationToken {

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import type React from 'react';
 import { inferQueryOutput, trpc } from '../utils/trpc';
 
-const Home: NextPage = (props) => {
+const Home: NextPage = () => {
   const [mounted, isMounted] = useState(false);
 
   useEffect(() => {
@@ -44,11 +44,14 @@ const Home: NextPage = (props) => {
     refetch();
   };
 
+  // If the vote is loading or data is still being retrieved, disable buttons
+  const fetchingNext = voteMutation.isLoading || isLoading;
+
+  /////////////////////////////
+  // Begin HTML Rendering
   if (isLoading || !pokemon) {
     return <div>Loading...</div>;
   }
-
-  const fetchingNext = voteMutation.isLoading || isLoading;
 
   return (
     <>
@@ -110,7 +113,7 @@ const PokemonListing = ({
         }`}
       >
         <h2 className="text-xl capitalize">{pokemon.name}</h2>
-        <div className="m-[-1rem] animate-fade-in">
+        <div className="m-[-1rem] animate-fade-in -z-10">
           <Image
             src={pokemon.spriteUrl}
             alt={`${pokemon.name}'s sprite image`}

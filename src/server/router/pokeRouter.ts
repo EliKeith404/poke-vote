@@ -3,14 +3,28 @@ import { z } from 'zod';
 
 import { getOptionsForVote } from '../../utils/getRandomPokemon';
 import { prisma } from '../db/client';
+import { PokemonClient } from 'pokenode-ts';
 
 export const pokeRouter = createRouter()
   .query('get-pokemon-pair', {
     async resolve() {
       const { firstId, secondId } = getOptionsForVote();
 
-      const bothPokemon = await prisma.pokemon.findMany({
-        where: { id: { in: [firstId, secondId] } },
+      //const bothPokemon = await prisma.pokemon.findMany({
+      //  where: { id: { in: [firstId, secondId] } },
+      //});
+
+      const api = new PokemonClient();
+
+      const bothPokemon = [
+        await api.getPokemonById(firstId),
+        await api.getPokemonById(secondId),
+      ].map((pokemon) => {
+        return {
+          name: pokemon.name,
+          id: pokemon.id,
+          spriteUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`,
+        };
       });
 
       if (bothPokemon[0] == null || bothPokemon[1] == null) {
