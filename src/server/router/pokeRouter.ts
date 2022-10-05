@@ -3,28 +3,14 @@ import { z } from 'zod';
 
 import { getOptionsForVote } from '../../utils/getRandomPokemon';
 import { prisma } from '../db/client';
-import { PokemonClient } from 'pokenode-ts';
 
 export const pokeRouter = createRouter()
   .query('get-pokemon-pair', {
     async resolve() {
       const { firstId, secondId } = getOptionsForVote();
 
-      //const bothPokemon = await prisma.pokemon.findMany({
-      //  where: { id: { in: [firstId, secondId] } },
-      //});
-
-      const api = new PokemonClient();
-
-      const bothPokemon = [
-        await api.getPokemonById(firstId),
-        await api.getPokemonById(secondId),
-      ].map((pokemon) => {
-        return {
-          name: pokemon.name,
-          id: pokemon.id,
-          spriteUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`,
-        };
+      const bothPokemon = await prisma.pokemon.findMany({
+        where: { id: { in: [firstId, secondId] } },
       });
 
       if (bothPokemon[0] == null || bothPokemon[1] == null) {
@@ -71,34 +57,6 @@ export const pokeRouter = createRouter()
       }),
     }),
     async resolve({ input }) {
-      await prisma.pokemon.upsert({
-        where: {
-          id: input.votedFor.id,
-        },
-        update: {
-          name: input.votedFor.name,
-        },
-        create: {
-          id: input.votedFor.id,
-          name: input.votedFor.name,
-          spriteUrl: input.votedFor.spriteUrl,
-        },
-      });
-
-      await prisma.pokemon.upsert({
-        where: {
-          id: input.votedAgainst.id,
-        },
-        update: {
-          name: input.votedAgainst.name,
-        },
-        create: {
-          id: input.votedAgainst.id,
-          name: input.votedAgainst.name,
-          spriteUrl: input.votedAgainst.spriteUrl,
-        },
-      });
-
       const voteInDb = await prisma.vote.create({
         data: {
           votedForId: input.votedFor.id,

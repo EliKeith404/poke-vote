@@ -94,6 +94,7 @@ const Home: NextPage = () => {
 
 export default Home;
 
+// Pokemon Listing Component
 type ServerType = inferQueryOutput<'poke.get-pokemon-pair'>['first'];
 
 const PokemonListing = ({
