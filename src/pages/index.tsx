@@ -4,9 +4,11 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import type React from 'react';
 import { inferQueryOutput, trpc } from '../utils/trpc';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 const Home: NextPage = () => {
   const [mounted, isMounted] = useState(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     isMounted(true);
@@ -63,7 +65,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="h-screen w-screen flex flex-col justify-center items-center">
+      <main className="h-screen w-screen mt-[-5rem] flex flex-col justify-center items-center">
         <div>
           <p>Which Pokemon is Rounder?</p>
         </div>

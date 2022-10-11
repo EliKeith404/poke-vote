@@ -20,8 +20,8 @@ Go vote at https://poke-vote-elikeith404.vercel.app/ !
 - [ ] Get a custom domain
 - [ ] Fallback/Loading page
 - [ ] Custom 404 page
+- [x] Discord Auth
 - [ ] More Vote Categories
-- [ ] Discord Integration
 - [ ] Tournament Bracket Generator
 
 ## Things Learned 🔖

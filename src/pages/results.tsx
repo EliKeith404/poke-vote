@@ -46,7 +46,7 @@ const Results = ({ rankedPokemon }: { rankedPokemon: PokemonQueryResult }) => {
   if (!rankedPokemon) return <div>Loading...</div>;
 
   return (
-    <div className="max-w-[900px] mx-auto pt-10">
+    <div className="max-w-[900px] mx-auto">
       <h1 className="text-4xl pt-10 pb-4">Results</h1>
       <div>
         {rankedPokemon

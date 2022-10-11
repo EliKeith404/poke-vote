@@ -6,25 +6,48 @@ const Navbar = () => {
   const { data: session } = useSession();
 
   return (
-    <div className="w-full absolute block py-10">
-      <ul className="flex justify-center">
-        <li className="px-5">
-          <Link href={'/'}>Home</Link>
-        </li>
-        <li className="px-5">
-          <Link href={'/results'}>Results</Link>
-        </li>
-        {/*<li className="px-5">
+    <>
+      <div className="fixed w-full flex justify-between py-7 bg-slate-700 z-10 shadow-xl">
+        <Link href={'/'}>
+          <a className="font-pokemon tracking-wider px-10 mt-[-0.6rem] text-2xl">
+            PokeVote
+          </a>
+        </Link>
+        <ul className="flex justify-end px-5 font-bold">
+          <li className="px-5">
+            <Link href={'/'}>
+              <a>Home</a>
+            </Link>
+          </li>
+          <li className="px-5">
+            <Link href={'/results'}>
+              <a>Results</a>
+            </Link>
+          </li>
           {!session ? (
             // If the user doesn't have an active session, display login button,
-            <button onClick={() => signIn('discord')}>Login</button>
+            <li className="px-5">
+              <button onClick={() => signIn('discord')}>Sign In</button>
+            </li>
           ) : (
-            // Else display a logout button
-            <button onClick={() => signOut()}>Logout</button>
+            // Else display user info and logout button
+            <>
+              <li className="px-5">
+                <Link href="/profile">
+                  <a>Profile</a>
+                </Link>
+              </li>
+              <li className="px-5">
+                <button onClick={() => signOut()}>Sign Out</button>
+              </li>
+            </>
           )}
-          </li>*/}
-      </ul>
-    </div>
+        </ul>
+      </div>
+
+      {/* Spacer Element */}
+      <div className="py-10" />
+    </>
   );
 };
 
