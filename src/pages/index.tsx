@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import type React from 'react';
 import { inferQueryOutput, trpc } from '../utils/trpc';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { Button, Center, Container, Paper } from '@mantine/core';
 
 const Home: NextPage = () => {
   const [mounted, isMounted] = useState(false);
@@ -65,12 +67,16 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="h-screen w-screen mt-[-5rem] flex flex-col justify-center items-center">
+      <Container className="h-full mt-[-5rem] flex flex-col justify-center items-center px-2">
         <div>
-          <p>Which Pokemon is Rounder?</p>
+          <h1 className="text-xl">Which Pokemon is Rounder?</h1>
         </div>
         <div className="p-4" />
-        <div className="flex justify-between items-center border rounded-xl w-full max-w-[620px] p-6 animate-fade-in">
+        <Paper
+          className="flex justify-between items-center w-full max-w-[620px] p-2 animate-fade-in"
+          withBorder
+          radius="lg"
+        >
           {mounted && (
             <PokemonListing
               pokemon={pokemon.first}
@@ -78,9 +84,7 @@ const Home: NextPage = () => {
               disabled={fetchingNext}
             />
           )}
-          <div>
-            <span>vs.</span>
-          </div>
+          <span>vs.</span>
           {mounted && (
             <PokemonListing
               pokemon={pokemon.second}
@@ -88,8 +92,9 @@ const Home: NextPage = () => {
               disabled={fetchingNext}
             />
           )}
-        </div>
-      </main>
+        </Paper>
+        <div className="py-4" />
+      </Container>
     </>
   );
 };
@@ -115,8 +120,8 @@ const PokemonListing = ({
           disabled && 'opacity-0'
         }`}
       >
-        <h2 className="text-xl capitalize">{pokemon.name}</h2>
-        <div className="m-[-1rem] animate-fade-in -z-10">
+        <h2 className="text-lg md:text-xl capitalize">{pokemon.name}</h2>
+        <div className="m-[-1rem] animate-fade-in">
           <Image
             src={pokemon.spriteUrl}
             alt={`${pokemon.name}'s sprite image`}
@@ -126,13 +131,14 @@ const PokemonListing = ({
           />
         </div>
       </div>
-      <button
-        className={`py-1 px-4 rounded-xl shadow-xl bg-slate-400 z-10`}
+      <Button
+        color="yellow"
+        radius="md"
         onClick={() => vote()}
         disabled={disabled}
       >
         Vote
-      </button>
+      </Button>
     </div>
   );
 };

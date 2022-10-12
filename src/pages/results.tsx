@@ -3,6 +3,7 @@ import Image from 'next/image';
 import React from 'react';
 import { prisma } from '../server/db/client';
 import { inferAsyncReturnType } from '@trpc/server';
+import { Paper } from '@mantine/core';
 
 // Get Pokemon from database, ordered by vote count
 const getRankedPokemon = async () => {
@@ -46,7 +47,7 @@ const Results = ({ rankedPokemon }: { rankedPokemon: PokemonQueryResult }) => {
   if (!rankedPokemon) return <div>Loading...</div>;
 
   return (
-    <div className="max-w-[900px] mx-auto">
+    <div className="max-w-[900px] mx-auto px-5">
       <h1 className="text-4xl pt-10 pb-4">Results</h1>
       <div>
         {rankedPokemon
@@ -81,7 +82,7 @@ const PokemonListItem = ({
   rank: number;
 }) => {
   return (
-    <div className="grid grid-cols-4  border border-slate-500 mx-auto px-10">
+    <Paper className="grid grid-cols-4 mx-auto px-10" withBorder>
       <span className="m-auto">#{rank}</span>
       <div className="m-[-1rem]">
         <Image
@@ -97,6 +98,6 @@ const PokemonListItem = ({
         <p className="capitalize md:text-lg">{pokemon.name}</p>
       </div>
       <p className="px-5 m-auto">{calcVotePercent(pokemon).toFixed(2)}%</p>
-    </div>
+    </Paper>
   );
 };

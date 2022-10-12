@@ -5,9 +5,11 @@ import { withTRPC } from '@trpc/next';
 import { SessionProvider } from 'next-auth/react';
 import type { AppType } from 'next/dist/shared/lib/utils';
 import superjson from 'superjson';
-import Navbar from '../components/Navbar';
+import Nav from '../components/Nav';
 import type { AppRouter } from '../server/router';
+import { MantineProvider } from '@mantine/core';
 import '../styles/globals.css';
+import AppContainer from '../components/AppContainer';
 
 const MyApp: AppType = ({
   Component,
@@ -15,8 +17,19 @@ const MyApp: AppType = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <Navbar />
-      <Component {...pageProps} />
+      <MantineProvider
+        withGlobalStyles
+        withNormalizeCSS
+        theme={{
+          /** Put your mantine theme override here */
+          colorScheme: 'dark',
+        }}
+      >
+        {/* <Nav /> */}
+        <AppContainer>
+          <Component {...pageProps} />
+        </AppContainer>
+      </MantineProvider>
     </SessionProvider>
   );
 };
