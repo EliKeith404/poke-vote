@@ -27,7 +27,7 @@ const HeaderComponent = ({
 
   return (
     <>
-      <Header height={75} p="md">
+      <Header height={75}>
         <Container className="flex justify-between items-center h-full">
           <Group className="flex items-center">
             <Link href={'/'} passHref>
