@@ -19,11 +19,9 @@ import { FaDiscord } from 'react-icons/fa';
 const HeaderComponent = ({
   opened,
   toggle,
-  close,
 }: {
   opened: boolean;
   toggle: () => void;
-  close: () => void;
 }) => {
   const { data: session } = useSession();
 

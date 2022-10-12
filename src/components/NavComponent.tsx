@@ -4,11 +4,9 @@ import React from 'react';
 
 const NavComponent = ({
   opened,
-  toggle,
   close,
 }: {
   opened: boolean;
-  toggle: () => void;
   close: () => void;
 }) => {
   const scaleY = {

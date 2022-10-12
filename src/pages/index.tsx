@@ -4,12 +4,10 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import type React from 'react';
 import { inferQueryOutput, trpc } from '../utils/trpc';
-import { signIn, signOut, useSession } from 'next-auth/react';
 import { Button, Container, Paper, Space } from '@mantine/core';
 
 const Home: NextPage = () => {
   const [mounted, isMounted] = useState(false);
-  const { data: session } = useSession();
 
   useEffect(() => {
     isMounted(true);
