@@ -65,7 +65,7 @@ const Home: NextPage = () => {
       </Head>
 
       <Container className="h-full flex flex-col justify-center items-center px-2">
-        <h1 className="text-xl">{`Which Pokemon is Rounder?`}</h1>
+        <h1 className="text-xl text-center">{`Which Pokemon is Rounder?`}</h1>
         <Space h={25} />
         <Paper
           className="flex justify-evenly items-center w-full max-w-[620px] p-2 animate-fade-in"

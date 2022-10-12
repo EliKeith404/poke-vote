@@ -62,7 +62,7 @@ const HeaderComponent = ({
             {!session ? (
               // If the user doesn't have an active session, display login button,
               <Button
-                className="flex justify-center items-center font-bold bg-blue-800 hover:bg-blue-900"
+                className="hidden xs:flex justify-center items-center font-bold bg-blue-800 hover:bg-blue-900"
                 radius={'md'}
                 onClick={() => signIn('discord')}
               >
