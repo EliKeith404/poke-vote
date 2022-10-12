@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import type React from 'react';
 import { inferQueryOutput, trpc } from '../utils/trpc';
 import { signIn, signOut, useSession } from 'next-auth/react';
-import { Button, Container, MediaQuery, Paper } from '@mantine/core';
+import { Button, Container, Paper, Space } from '@mantine/core';
 
 const Home: NextPage = () => {
   const [mounted, isMounted] = useState(false);
@@ -67,10 +67,8 @@ const Home: NextPage = () => {
       </Head>
 
       <Container className="h-full flex flex-col justify-center items-center px-2">
-        <div>
-          <h1 className="text-xl">Which Pokemon is Rounder?</h1>
-        </div>
-        <div className="p-4" />
+        <h1 className="text-xl">{`Which Pokemon is Rounder?`}</h1>
+        <Space h={25} />
         <Paper
           className="flex justify-evenly items-center w-full max-w-[620px] p-2 animate-fade-in"
           withBorder
@@ -92,7 +90,6 @@ const Home: NextPage = () => {
             />
           )}
         </Paper>
-        <div className="py-4" />
       </Container>
     </>
   );

@@ -84,13 +84,15 @@ const PokemonListItem = ({
   return (
     <Paper className="grid grid-cols-4 mx-auto px-3 md:px-10" withBorder>
       <span className="text-sm md:text-lg m-auto">#{rank}</span>
-      <Image
-        src={pokemon.spriteUrl}
-        alt={`${pokemon.name}'s Sprite Image`}
-        width={192}
-        height={192}
-        style={{ imageRendering: 'pixelated' }}
-      />
+      <div className="mx-auto">
+        <Image
+          src={pokemon.spriteUrl}
+          alt={`${pokemon.name}'s Sprite Image`}
+          width={112}
+          height={112}
+          style={{ imageRendering: 'pixelated' }}
+        />
+      </div>
       <div className="flex flex-col items-center m-auto">
         <span className="text-xs">{pokemon.id}</span>
         <span className="capitalize text-sm md:text-lg">{pokemon.name}</span>
