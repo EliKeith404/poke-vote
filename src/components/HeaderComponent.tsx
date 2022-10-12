@@ -33,7 +33,7 @@ const HeaderComponent = ({
           <Group className="flex items-center">
             <Link href={'/'} passHref>
               <Anchor
-                className="font-pokemon tracking-wider mt-[-0.6rem] text-2xl text-white hover:no-underline"
+                className="font-pokemon tracking-wider text-2xl text-white hover:no-underline"
                 component="a"
               >
                 PokeVote
@@ -41,12 +41,18 @@ const HeaderComponent = ({
             </Link>
             <Text className="hidden md:block px-5">|</Text>
             <Link href={'/'} passHref>
-              <Anchor className="hidden md:block py-7" component="a">
+              <Anchor
+                className="hidden md:block tracking-wider text-white py-7"
+                component="a"
+              >
                 Home
               </Anchor>
             </Link>
             <Link href={'/results'} passHref>
-              <Anchor className="hidden md:block px-3 py-7" component="a">
+              <Anchor
+                className="hidden md:block tracking-wider text-white px-3 py-7"
+                component="a"
+              >
                 Results
               </Anchor>
             </Link>

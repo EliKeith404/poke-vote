@@ -48,7 +48,7 @@ const Results = ({ rankedPokemon }: { rankedPokemon: PokemonQueryResult }) => {
 
   return (
     <div className="max-w-[900px] mx-auto md:px-5">
-      <h1 className="text-2xl md:text-4xl">Results</h1>
+      <h1 className="text-2xl md:text-3xl">Results</h1>
       <div>
         {rankedPokemon
           .sort((a, b) => {
