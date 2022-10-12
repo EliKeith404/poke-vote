@@ -14,6 +14,7 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React from 'react';
 import { GoPerson, GoGear, GoSignOut } from 'react-icons/go';
+import { FaDiscord } from 'react-icons/fa';
 
 const HeaderComponent = ({
   opened,
@@ -33,37 +34,41 @@ const HeaderComponent = ({
           <Group className="flex items-center">
             <Link href={'/'} passHref>
               <Anchor
-                className="font-pokemon tracking-wider text-2xl text-white hover:no-underline"
+                className="font-pokemon tracking-wider text-2xl text-white hover:no-underline pr-4"
                 component="a"
               >
                 PokeVote
               </Anchor>
             </Link>
-            <Text className="hidden md:block px-5">|</Text>
-            <Link href={'/'} passHref>
-              <Anchor
-                className="hidden md:block tracking-wider text-white py-7"
-                component="a"
-              >
-                Home
-              </Anchor>
-            </Link>
-            <Link href={'/results'} passHref>
-              <Anchor
-                className="hidden md:block tracking-wider text-white px-3 py-7"
-                component="a"
-              >
-                Results
-              </Anchor>
-            </Link>
+            <Text className="hidden md:block">|</Text>
+            <nav className="flex justify-evenly">
+              <Link href={'/'} passHref>
+                <Anchor
+                  className="hidden md:block tracking-wider text-white py-7 px-4"
+                  component="a"
+                >
+                  Home
+                </Anchor>
+              </Link>
+              <Link href={'/results'} passHref>
+                <Anchor
+                  className="hidden md:block tracking-wider text-white py-7 px-4"
+                  component="a"
+                >
+                  Results
+                </Anchor>
+              </Link>
+            </nav>
           </Group>
           <Group className="flex justify-between items-center">
             {!session ? (
               // If the user doesn't have an active session, display login button,
               <Button
-                className="border py-2 px-4 rounded-xl font-bold bg-blue-900 hover:bg-blue-800"
+                className="flex justify-center items-center font-bold bg-blue-800 hover:bg-blue-900"
+                radius={'md'}
                 onClick={() => signIn('discord')}
               >
+                <FaDiscord className="mr-2 mt-[.1rem]" size={20} />
                 Sign In
               </Button>
             ) : (
