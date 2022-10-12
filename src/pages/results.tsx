@@ -47,8 +47,8 @@ const Results = ({ rankedPokemon }: { rankedPokemon: PokemonQueryResult }) => {
   if (!rankedPokemon) return <div>Loading...</div>;
 
   return (
-    <div className="max-w-[900px] mx-auto px-5">
-      <h1 className="text-4xl pt-10 pb-4">Results</h1>
+    <div className="max-w-[900px] mx-auto md:px-5">
+      <h1 className="text-2xl md:text-4xl">Results</h1>
       <div>
         {rankedPokemon
           .sort((a, b) => {
@@ -82,22 +82,22 @@ const PokemonListItem = ({
   rank: number;
 }) => {
   return (
-    <Paper className="grid grid-cols-4 mx-auto px-10" withBorder>
-      <span className="m-auto">#{rank}</span>
-      <div className="m-[-1rem]">
-        <Image
-          src={pokemon.spriteUrl}
-          alt={`${pokemon.name}'s Sprite Image`}
-          width={192}
-          height={192}
-          style={{ imageRendering: 'pixelated' }}
-        />
+    <Paper className="grid grid-cols-4 mx-auto px-3 md:px-10" withBorder>
+      <span className="text-sm md:text-lg m-auto">#{rank}</span>
+      <Image
+        src={pokemon.spriteUrl}
+        alt={`${pokemon.name}'s Sprite Image`}
+        width={192}
+        height={192}
+        style={{ imageRendering: 'pixelated' }}
+      />
+      <div className="flex flex-col items-center m-auto">
+        <span className="text-xs">{pokemon.id}</span>
+        <span className="capitalize text-sm md:text-lg">{pokemon.name}</span>
       </div>
-      <div className="flex flex-col items-center px-5 m-auto">
-        <p className="text-xs">{pokemon.id}</p>
-        <p className="capitalize md:text-lg">{pokemon.name}</p>
-      </div>
-      <p className="px-5 m-auto">{calcVotePercent(pokemon).toFixed(2)}%</p>
+      <p className="text-sm md:text-lg px-5 m-auto">
+        {calcVotePercent(pokemon).toFixed(2)}%
+      </p>
     </Paper>
   );
 };

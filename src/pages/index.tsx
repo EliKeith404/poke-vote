@@ -5,8 +5,7 @@ import { useEffect, useState } from 'react';
 import type React from 'react';
 import { inferQueryOutput, trpc } from '../utils/trpc';
 import { signIn, signOut, useSession } from 'next-auth/react';
-import Link from 'next/link';
-import { Button, Center, Container, Paper } from '@mantine/core';
+import { Button, Container, MediaQuery, Paper } from '@mantine/core';
 
 const Home: NextPage = () => {
   const [mounted, isMounted] = useState(false);
@@ -67,13 +66,13 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Container className="h-full mt-[-5rem] flex flex-col justify-center items-center px-2">
+      <Container className="h-full flex flex-col justify-center items-center px-2">
         <div>
           <h1 className="text-xl">Which Pokemon is Rounder?</h1>
         </div>
         <div className="p-4" />
         <Paper
-          className="flex justify-between items-center w-full max-w-[620px] p-2 animate-fade-in"
+          className="flex justify-evenly items-center w-full max-w-[620px] p-2 animate-fade-in"
           withBorder
           radius="lg"
         >
@@ -114,14 +113,14 @@ const PokemonListing = ({
   disabled: boolean;
 }) => {
   return (
-    <div className={`w-64 h-64 flex flex-col justify-center items-center`}>
+    <div className={`flex flex-col justify-center items-center`}>
       <div
         className={`flex flex-col justify-center items-center transition-opacity ${
           disabled && 'opacity-0'
         }`}
       >
-        <h2 className="text-lg md:text-xl capitalize">{pokemon.name}</h2>
-        <div className="m-[-1rem] animate-fade-in">
+        <h2 className="text-sm md:text-xl capitalize">{pokemon.name}</h2>
+        <div className="py-5 animate-fade-in">
           <Image
             src={pokemon.spriteUrl}
             alt={`${pokemon.name}'s sprite image`}
@@ -131,7 +130,9 @@ const PokemonListing = ({
           />
         </div>
       </div>
+
       <Button
+        className="mb-2"
         color="yellow"
         radius="md"
         onClick={() => vote()}

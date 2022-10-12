@@ -5,7 +5,6 @@ import { withTRPC } from '@trpc/next';
 import { SessionProvider } from 'next-auth/react';
 import type { AppType } from 'next/dist/shared/lib/utils';
 import superjson from 'superjson';
-import Nav from '../components/Nav';
 import type { AppRouter } from '../server/router';
 import { MantineProvider } from '@mantine/core';
 import '../styles/globals.css';
@@ -25,7 +24,6 @@ const MyApp: AppType = ({
           colorScheme: 'dark',
         }}
       >
-        {/* <Nav /> */}
         <AppContainer>
           <Component {...pageProps} />
         </AppContainer>

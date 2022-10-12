@@ -1,4 +1,4 @@
-import { Anchor, Button, Navbar, Paper, Transition } from '@mantine/core';
+import { Anchor, Navbar, Paper, Transition } from '@mantine/core';
 import Link from 'next/link';
 import React from 'react';
 
@@ -29,26 +29,25 @@ const NavComponent = ({
         {(styles) => (
           <Navbar
             style={styles}
-            className={'bg-slate-800'}
+            className={'bg-black/90'}
             width={{ base: '100%', sm: 0 }}
-            height="0"
+            height="100%"
             hidden={!opened}
+            onClick={() => close()}
           >
-            <Paper className="bg-slate-900" shadow={'lg'}>
+            <Paper className="bg-zinc-800" shadow={'lg'}>
               <Link href={'/'} passHref>
                 <Anchor
-                  className="block px-3 py-7 hover:bg-slate-800"
+                  className="block px-3 py-7 text-lg hover:bg-zinc-700"
                   component="a"
-                  onClick={() => close()}
                 >
                   Home
                 </Anchor>
               </Link>
               <Link href={'/results'} passHref>
                 <Anchor
-                  className="block px-3 py-7 hover:bg-slate-800"
+                  className="block px-3 py-7 text-lg hover:bg-zinc-700"
                   component="a"
-                  onClick={() => close()}
                 >
                   Results
                 </Anchor>

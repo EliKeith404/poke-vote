@@ -1,6 +1,6 @@
 import { AppShell } from '@mantine/core';
-import { useClickOutside, useDisclosure } from '@mantine/hooks';
-import React, { useState } from 'react';
+import { useDisclosure } from '@mantine/hooks';
+import React from 'react';
 import HeaderComponent from './HeaderComponent';
 import NavComponent from './NavComponent';
 
@@ -15,9 +15,7 @@ const AppContainer = (props: {
     | null
     | undefined;
 }) => {
-  const [nav, setNav] = useState(false);
   const [opened, { toggle, close }] = useDisclosure(false);
-  const clickOutsideRef = useClickOutside(() => close());
 
   return (
     <AppShell
