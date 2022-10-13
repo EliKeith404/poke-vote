@@ -2,10 +2,10 @@
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    screens: {
-      xs: '350px',
-    },
     extend: {
+      screens: {
+        xs: '350px',
+      },
       keyframes: {
         'fade-in': {
           '0%': {
