@@ -1,6 +1,9 @@
-import { Anchor, Navbar, Paper, Transition } from '@mantine/core';
+import { Anchor, Navbar, Paper, Text, Transition } from '@mantine/core';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React from 'react';
+import { FaDiscord, FaHome, FaTrophy } from 'react-icons/fa';
+import { GoSignOut } from 'react-icons/go';
 
 const NavComponent = ({
   opened,
@@ -9,6 +12,7 @@ const NavComponent = ({
   opened: boolean;
   close: () => void;
 }) => {
+  const { data: session } = useSession();
   const scaleY = {
     in: { opacity: 1, transform: 'scaleY(1)' },
     out: { opacity: 0, transform: 'scaleY(0)' },
@@ -35,20 +39,42 @@ const NavComponent = ({
             <Paper className="bg-zinc-800" style={styles} shadow={'lg'}>
               <Link href={'/'} passHref>
                 <Anchor
-                  className="block px-3 py-7 text-lg hover:bg-zinc-700"
+                  className="flex items-center px-3 py-7 text-lg hover:bg-zinc-700"
                   component="a"
                 >
-                  Home
+                  <FaHome size={18} className="mr-2" />
+                  <span>Home</span>
                 </Anchor>
               </Link>
               <Link href={'/results'} passHref>
                 <Anchor
-                  className="block px-3 py-7 text-lg hover:bg-zinc-700"
+                  className="flex items-center px-3 py-7 text-lg hover:bg-zinc-700"
                   component="a"
                 >
-                  Results
+                  <FaTrophy size={18} className="mr-2" />
+                  <span>Results</span>
                 </Anchor>
               </Link>
+
+              {!session ? (
+                <Anchor
+                  className="xs:hidden flex items-center px-3 py-7 text-lg hover:bg-zinc-700"
+                  component="text"
+                  onClick={() => signIn('discord')}
+                >
+                  <FaDiscord size={18} className="mr-2" />
+                  <span>Sign In</span>
+                </Anchor>
+              ) : (
+                <Anchor
+                  className="xs:hidden flex items-center px-3 py-7 text-lg text-red-600 hover:bg-red-900/20"
+                  component="text"
+                  onClick={() => signOut()}
+                >
+                  <GoSignOut size={18} className="mr-2" />
+                  <span>Sign Out</span>
+                </Anchor>
+              )}
             </Paper>
           )}
         </Transition>

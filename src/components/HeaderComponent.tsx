@@ -39,10 +39,10 @@ const HeaderComponent = ({
               </Anchor>
             </Link>
             <Text className="hidden md:block">|</Text>
-            <nav className="flex justify-evenly">
+            <nav className="hidden md:flex justify-evenly ">
               <Link href={'/'} passHref>
                 <Anchor
-                  className="hidden md:block tracking-wider text-white py-7 px-4"
+                  className="tracking-wider text-white py-7 px-4"
                   component="a"
                 >
                   Home
@@ -50,7 +50,7 @@ const HeaderComponent = ({
               </Link>
               <Link href={'/results'} passHref>
                 <Anchor
-                  className="hidden md:block tracking-wider text-white py-7 px-4"
+                  className="tracking-wider text-white py-7 px-4"
                   component="a"
                 >
                   Results
