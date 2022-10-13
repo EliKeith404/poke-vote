@@ -7,7 +7,12 @@ const AboutPage: NextPage = () => {
   return (
     <Container>
       <h1 className="text-2xl md:text-3xl">About/FAQ</h1>
-      <Accordion variant="contained" radius="md" defaultValue="whatIsThis">
+      <Accordion
+        variant="contained"
+        radius="md"
+        order={3}
+        defaultValue="whatIsThis"
+      >
         <Accordion.Item value="whatIsThis">
           <Accordion.Control>What is this?</Accordion.Control>
           <Accordion.Panel>
@@ -32,7 +37,8 @@ const AboutPage: NextPage = () => {
           <Accordion.Control>Why do I need to sign in?</Accordion.Control>
           <Accordion.Panel>
             To add an extra layer of security so bots don&apos;t eat up my
-            precious bandwidth.
+            precious bandwidth (alt: I don&apos;t wanna push past my free
+            limits).
           </Accordion.Panel>
         </Accordion.Item>
 
