@@ -56,6 +56,14 @@ const HeaderComponent = ({
                   Results
                 </Anchor>
               </Link>
+              <Link href={'/about'} passHref>
+                <Anchor
+                  className="tracking-wider text-white py-7 px-4"
+                  component="a"
+                >
+                  About
+                </Anchor>
+              </Link>
             </nav>
           </Group>
           <Group className="flex justify-between items-center">
