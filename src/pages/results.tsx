@@ -4,6 +4,7 @@ import React from 'react';
 import { prisma } from '../server/db/client';
 import { inferAsyncReturnType } from '@trpc/server';
 import { Paper } from '@mantine/core';
+import Head from 'next/head';
 
 // Get Pokemon from database, ordered by vote count
 const getRankedPokemon = async () => {
@@ -47,25 +48,57 @@ const Results = ({ rankedPokemon }: { rankedPokemon: PokemonQueryResult }) => {
   if (!rankedPokemon) return <div>Loading...</div>;
 
   return (
-    <div className="max-w-[900px] mx-auto md:px-5">
-      <h1 className="text-2xl md:text-3xl">Results</h1>
-      <div>
-        {rankedPokemon
-          .sort((a, b) => {
-            const difference = calcVotePercent(b) - calcVotePercent(a);
+    <>
+      <Head>
+        <title>Results | PokeVote</title>
+        <meta property="og:title" content="Results | PokeVote" />
+        <meta
+          name="description"
+          content="Statistical, objective, and non-biased calculations on the characteristics of the 905 Pokemon"
+        />
+        <meta name="image" property="og:image" content="/assets/preview.png" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+        <meta name="msapplication-TileColor" content="#da532c" />
+        <meta name="theme-color" content="#ffffff" />
+      </Head>
+      <div className="max-w-[900px] mx-auto md:px-5">
+        <h1 className="text-2xl md:text-3xl">Results</h1>
+        <div>
+          {rankedPokemon
+            .sort((a, b) => {
+              const difference = calcVotePercent(b) - calcVotePercent(a);
 
-            if (difference === 0) {
-              return b._count.votesFor - a._count.votesFor;
-            }
+              if (difference === 0) {
+                return b._count.votesFor - a._count.votesFor;
+              }
 
-            return difference;
-          })
-          .slice(0, 10)
-          .map((pokemon, i) => {
-            return <PokemonListItem pokemon={pokemon} rank={i + 1} key={i} />;
-          })}
+              return difference;
+            })
+            .slice(0, 10)
+            .map((pokemon, i) => {
+              return <PokemonListItem pokemon={pokemon} rank={i + 1} key={i} />;
+            })}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

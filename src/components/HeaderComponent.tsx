@@ -83,7 +83,7 @@ const HeaderComponent = ({
                 onClick={() => signIn('discord')}
               >
                 <FaDiscord className="mr-2 mt-[.1rem]" size={20} />
-                Sign In
+                <span>Sign In</span>
               </Button>
             ) : (
               // Else display user info and logout button
@@ -113,6 +113,7 @@ const HeaderComponent = ({
             )}
             <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
               <Burger
+                title="Open navigation"
                 opened={opened}
                 onClick={() => toggle()}
                 size="sm"
