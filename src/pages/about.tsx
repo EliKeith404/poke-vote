@@ -9,21 +9,19 @@ const AboutPage: NextPage = () => {
     <>
       <Head>
         <title>About | PokeVote</title>
-        <meta
-          name="description"
-          content="What is the PokeVote site about? Why is this important? Is this sponsored by the Pokemon Company? Where does this data go? Most of these questions are probably not likely answered here!"
-        />
         {/* Open Graph Meta */}
         <meta property="og:title" content="About/FAQ | PokeVote" />
         <meta
+          name="description"
           property="og:description"
           content="What is the PokeVote site about? Why is this important? Is this sponsored by the Pokemon Company? Where does this data go? Most of these questions are probably not likely answered here!"
         />
         <meta
           name="image"
           property="og:image"
-          content="/preview-images/aboutPreview.png"
+          content="/preview-images/aboutPreview.jpg"
         />
+        <meta property="og:type" content="article"></meta>
       </Head>
       <Container>
         <h1 className="text-2xl md:text-3xl">About/FAQ</h1>

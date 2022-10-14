@@ -51,20 +51,17 @@ const Results = ({ rankedPokemon }: { rankedPokemon: PokemonQueryResult }) => {
     <>
       <Head>
         <title>Results | PokeVote</title>
-        <meta
-          name="description"
-          content="Statistical, objective, and non-biased calculations on the characteristics of the 905 Pokemon"
-        />
         {/* Open Graph Meta */}
         <meta property="og:title" content="Results | PokeVote" />
         <meta
+          name="description"
           property="og:description"
           content="Statistical, objective, and non-biased calculations on the characteristics of the 905 Pokemon"
         />
         <meta
           name="image"
           property="og:image"
-          content="/preview-images/resultsPreview.png"
+          content="/preview-images/resultsPreview.jpg"
         />
       </Head>
       <div className="max-w-[900px] mx-auto md:px-5">

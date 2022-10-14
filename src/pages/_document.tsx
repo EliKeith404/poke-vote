@@ -10,6 +10,7 @@ export default class _Document extends Document {
     return (
       <Html lang="en-us">
         <Head>
+          <meta name="author" content="Eli-Keith Bass" />
           <link
             rel="apple-touch-icon"
             sizes="180x180"

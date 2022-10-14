@@ -15,12 +15,12 @@ const HomePage: NextPage = () => {
       <Head>
         <title>PokeVote</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="1v1 Vote on Roundest Pokemon" />
         {/* Open Graph Metadata */}
         <meta property="og:title" content="PokeVote" />
         <meta
+          name="description"
           property="og:description"
-          content="1v1 Vote on Roundest Pokemon"
+          content="Settle debates on Pokemon characteristics through randomly generated 1v1 vote battles. Nothing more, nothing less. PokeVote will calculate totally unbiased and objective data points on the shape and character of the current 905 Pokemon."
         />
         <meta property="og:image" content="/preview-images/indexPreview.jpg" />
       </Head>
