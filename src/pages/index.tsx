@@ -1,4 +1,4 @@
-import { Button, Container, Group } from '@mantine/core';
+import { Button, Container, Group, Space } from '@mantine/core';
 import { NextPage } from 'next';
 import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -10,7 +10,7 @@ const HomePage: NextPage = () => {
   const { data: session } = useSession();
 
   return (
-    <Container className="flex flex-col justify-center items-center">
+    <Container className="flex flex-col justify-center items-center h-full">
       <h1 className="text-3xl md:text-4xl text-center">
         Vote on your favorite{' '}
         <Typewriter
@@ -57,6 +57,7 @@ const HomePage: NextPage = () => {
           </Button>
         </Link>
       </Group>
+      <Space py={50} />
     </Container>
   );
 };
