@@ -7,6 +7,17 @@ import { inferQueryOutput, trpc } from '../utils/trpc';
 import { Anchor, Button, Container, Paper, Space, Text } from '@mantine/core';
 import { signIn, useSession } from 'next-auth/react';
 
+const VoteHeader = () => {
+  return (
+    <Head>
+      <title>Voting | PokeVote</title>
+      <meta property="og:title" content="Voting | PokeVote" />
+      <meta name="description" content="1v1 Vote on Roundest Pokemon" />
+      <meta name="image" property="og:image" content="/assets/preview.png" />
+    </Head>
+  );
+};
+
 const VotePage: NextPage = () => {
   const [mounted, isMounted] = useState(false);
   const { status } = useSession();
@@ -52,52 +63,35 @@ const VotePage: NextPage = () => {
 
   /////////////////////////////
   // Begin HTML Rendering
+  /*
   if (status === 'unauthenticated') {
     return (
-      <Container>
-        <h1>Access Denied</h1>
-        <Text>
-          Please <Anchor onClick={() => signIn('discord')}>sign in</Anchor> to
-          vote on categories!
-        </Text>
-      </Container>
+      <>
+        <VoteHeader />
+        <Container>
+          <h1>Access Denied</h1>
+          <Text>
+            Please <Anchor onClick={() => signIn('discord')}>sign in</Anchor> to
+            vote on categories!
+          </Text>
+        </Container>
+      </>
     );
   }
+  */
 
   if (isLoading || !pokemon) {
-    return <div>Loading...</div>;
+    return (
+      <>
+        <VoteHeader />
+        <div>Loading...</div>
+      </>
+    );
   }
 
   return (
     <>
-      <Head>
-        <title>Voting | PokeVote</title>
-        <meta property="og:title" content="Voting | PokeVote" />
-        <meta name="description" content="1v1 Vote on Roundest Pokemon" />
-        <meta name="image" property="og:image" content="/assets/preview.png" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/favicon-32x32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/favicon-16x16.png"
-        />
-        <link rel="manifest" href="/site.webmanifest" />
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
-        <meta name="msapplication-TileColor" content="#da532c" />
-        <meta name="theme-color" content="#ffffff" />
-      </Head>
-
+      <VoteHeader />
       <Container className="h-full flex flex-col justify-center items-center px-2">
         <h1 className="text-xl text-center">{`Which Pokemon is Rounder?`}</h1>
         <Space h={25} />
