@@ -86,7 +86,7 @@ const HomePage: NextPage = () => {
             </Link>
           )}
           <Link href={'/results'} passHref>
-            <Button color={'orange'} radius={'md'} component={'a'}>
+            <Button className="bg-orange-700" radius={'md'} component={'a'}>
               See Results
             </Button>
           </Link>
