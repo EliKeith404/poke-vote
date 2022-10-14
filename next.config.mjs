@@ -18,4 +18,8 @@ export default defineNextConfig({
   images: {
     domains: ['raw.githubusercontent.com', 'cdn.discordapp.com'],
   },
+  i18n: {
+    locales: ['en'],
+    defaultLocale: 'en',
+  },
 });
