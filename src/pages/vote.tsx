@@ -11,9 +11,15 @@ const VoteHeader = () => {
   return (
     <Head>
       <title>Voting | PokeVote</title>
-      <meta property="og:title" content="Voting | PokeVote" />
       <meta name="description" content="1v1 Vote on Roundest Pokemon" />
-      <meta name="image" property="og:image" content="/assets/preview.png" />
+      {/* Open Graph Meta */}
+      <meta property="og:description" content="1v1 Vote on Roundest Pokemon" />
+      <meta property="og:title" content="Voting | PokeVote" />
+      <meta
+        name="image"
+        property="og:image"
+        content="/preview-images/votePreview.png"
+      />
     </Head>
   );
 };

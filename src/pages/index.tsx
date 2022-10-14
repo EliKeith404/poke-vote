@@ -13,19 +13,22 @@ const HomePage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Home | PokeVote</title>
+        <title>PokeVote</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content="1v1 Vote on Roundest Pokemon" />
         {/* Open Graph Metadata */}
-        <meta property="og:title" content="PokeVote Home Page" />
+        <meta property="og:title" content="PokeVote" />
         <meta
           property="og:description"
           content="1v1 Vote on Roundest Pokemon"
         />
-        <meta property="og:image" content="/assets/preview.png" />
+        <meta property="og:image" content="/preview-images/indexPreview.jpg" />
       </Head>
       <Container className="flex flex-col justify-center items-center h-full">
-        <h1 className="text-3xl md:text-4xl text-center">
+        <h1
+          className="text-3xl md:text-4xl text-center"
+          style={{ color: 'li' }}
+        >
           Vote on which Pokemon is the{' '}
           <Typewriter
             options={{
@@ -35,6 +38,8 @@ const HomePage: NextPage = () => {
                 '<span style="color: red;">Meanest</span>',
                 '<span style="color: pink;">Friendliest</span>',
                 '<span style="color: orange;">Wackiest</span>',
+                '<span style="color: lightsalmon;">Tastiest</span>',
+                '<span style="color: lightgreen;">Rowdiest</span>',
               ],
               autoStart: true,
               loop: true,
@@ -56,7 +61,7 @@ const HomePage: NextPage = () => {
               component={'a'}
             >
               <FaPencilAlt className="mr-2" />
-              <span>Go To Vote</span>
+              <span>Vote Now!</span>
             </Button>
           </Link>
           {/* !session ? (
