@@ -32,7 +32,7 @@ const HeaderComponent = ({
           <Group className="flex items-center">
             <Link href={'/'} passHref>
               <Anchor
-                className="font-pokemon tracking-wider text-2xl text-white hover:no-underline pr-4"
+                className="font-pokemon tracking-wider text-2xl text-yellow-500 hover:no-underline pr-4"
                 component="a"
               >
                 PokeVote
@@ -46,6 +46,14 @@ const HeaderComponent = ({
                   component="a"
                 >
                   Home
+                </Anchor>
+              </Link>
+              <Link href={'/vote'} passHref>
+                <Anchor
+                  className="tracking-wider text-white py-7 px-4"
+                  component="a"
+                >
+                  Vote
                 </Anchor>
               </Link>
               <Link href={'/results'} passHref>
@@ -90,6 +98,7 @@ const HeaderComponent = ({
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Label>{`Welcome, ${session.user?.name}`}</Menu.Label>
+                  <Menu.Label>{`You are a ${session.user?.role}`}</Menu.Label>
                   <Menu.Item icon={<GoPerson size={14} />}>Profile</Menu.Item>
                   <Menu.Item icon={<GoGear size={14} />}>Settings</Menu.Item>
                   <Menu.Item

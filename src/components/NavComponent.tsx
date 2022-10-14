@@ -2,7 +2,13 @@ import { Anchor, Navbar, Paper, Transition } from '@mantine/core';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React from 'react';
-import { FaDiscord, FaHome, FaPoll, FaQuestionCircle } from 'react-icons/fa';
+import {
+  FaDiscord,
+  FaHome,
+  FaPencilAlt,
+  FaPoll,
+  FaQuestionCircle,
+} from 'react-icons/fa';
 import { GoSignOut } from 'react-icons/go';
 
 const NavComponent = ({
@@ -44,6 +50,15 @@ const NavComponent = ({
                 >
                   <FaHome size={18} className="mr-2" />
                   <span>Home</span>
+                </Anchor>
+              </Link>
+              <Link href={'/vote'} passHref>
+                <Anchor
+                  className="flex items-center px-3 py-7 text-lg hover:bg-zinc-700"
+                  component="a"
+                >
+                  <FaPencilAlt size={18} className="mr-2" />
+                  <span>Vote</span>
                 </Anchor>
               </Link>
               <Link href={'/results'} passHref>

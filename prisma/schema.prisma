@@ -35,28 +35,29 @@ model Vote {
 }
 
 model Category {
-    id        String  @id @default(cuid())
+    id        String   @id @default(cuid())
     name      String
     available Boolean
-    userId    String? @unique
-    user      User?   @relation(fields: [userId], references: [id])
+    accountId String?  @unique
+    account   Account? @relation(fields: [accountId], references: [id])
 }
 
 // Necessary for Next auth
 model Account {
-    id                String  @id @default(cuid())
+    id                String    @id @default(cuid())
     userId            String
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
+    refresh_token     String?   @db.Text
+    access_token      String?   @db.Text
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? @db.Text
+    id_token          String?   @db.Text
     session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    assignedCategory  Category?
 
     @@unique([provider, providerAccountId])
 }
@@ -70,14 +71,14 @@ model Session {
 }
 
 model User {
-    id               String    @id @default(cuid())
-    name             String?
-    email            String?   @unique
-    emailVerified    DateTime?
-    image            String?
-    assignedCategory Category?
-    accounts         Account[]
-    sessions         Session[]
+    id            String    @id @default(cuid())
+    name          String?
+    email         String?   @unique
+    emailVerified DateTime?
+    image         String?
+    role          Role      @default(USER)
+    accounts      Account[]
+    sessions      Session[]
 }
 
 model VerificationToken {
@@ -86,4 +87,9 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+enum Role {
+    USER
+    ADMIN
 }
