@@ -2,7 +2,7 @@
 
 Come vote for the roundest, sharpest, and many more categories of Pokemon! Results are calculated in real-time.
 
-Go vote at https://poke-vote-elikeith404.vercel.app/ !
+Go vote at https://www.pokevote.com/ !
 
 ## Technologies Used ⚙️
 
