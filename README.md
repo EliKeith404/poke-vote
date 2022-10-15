@@ -17,12 +17,14 @@ Go vote at https://poke-vote-elikeith404.vercel.app/ !
 ## Todo + Optimizations 📝
 
 - [x] Host website
-- [ ] Get a custom domain
-- [ ] Fallback/Loading page
+- [x] Get a custom domain
+- [ ] Skeleton/Fallback/Loading page
 - [ ] Custom 404 page
 - [x] Discord Auth
 - [ ] More Vote Categories
 - [ ] Tournament Bracket Generator
+- [x] Meta tags and cards on social sites
+- [x] Accessibility Improvements
 
 ## Things Learned 🔖
 
