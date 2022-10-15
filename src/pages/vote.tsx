@@ -16,12 +16,28 @@ const VoteHeader = () => {
       <meta
         name="description"
         property="og:description"
-        content="The voting platform. The point where your voice is heard. Make an impact on the category you're voting for, who knows what this data could eventually be used for..."
+        content="The voting platform. The point where your voice is heard. Vote categories are completely subjective and should be voted based on whatever that category means to you. Or do whatever you want I can't stop you."
       />
       <meta
         name="image"
         property="og:image"
         content="/preview-images/votePreview.jpg"
+      />
+      {/* Twitter Card */}
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:site" content="@elikeith404" />
+      <meta name="twitter:title" content="Voting | PokeVote" />
+      <meta
+        name="twitter:description"
+        content="The voting platform. The point where your voice is heard. Vote categories are completely subjective and should be voted based on whatever that category means to you. Or do whatever you want I can't stop you."
+      />
+      <meta
+        name="twitter:image"
+        content="https://poke-vote-elikeith404.vercel.app/preview-images/votePreview.jpg"
+      />
+      <meta
+        name="twitter:image:alt"
+        content="A vote between two pokemon on which is the roundest"
       />
     </Head>
   );

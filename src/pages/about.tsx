@@ -21,7 +21,23 @@ const AboutPage: NextPage = () => {
           property="og:image"
           content="/preview-images/aboutPreview.jpg"
         />
-        <meta property="og:type" content="article"></meta>
+        <meta property="og:type" content="article" />
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@elikeith404" />
+        <meta name="twitter:title" content="About | PokeVote" />
+        <meta
+          name="twitter:description"
+          content="What is the PokeVote site about? Why is this important? Is this sponsored by the Pokemon Company? Where does this data go? Most of these questions are probably not likely answered here!"
+        />
+        <meta
+          name="twitter:image"
+          content="https://poke-vote-elikeith404.vercel.app/preview-images/aboutPreview.jpg"
+        />
+        <meta
+          name="twitter:image:alt"
+          content="Frequently asked questions page"
+        />
       </Head>
       <Container>
         <h1 className="text-2xl md:text-3xl">About/FAQ</h1>

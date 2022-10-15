@@ -56,12 +56,28 @@ const Results = ({ rankedPokemon }: { rankedPokemon: PokemonQueryResult }) => {
         <meta
           name="description"
           property="og:description"
-          content="Statistical, objective, and non-biased calculations on the characteristics of the 905 Pokemon"
+          content="Statistical, objective, and non-biased calculations on the characteristics of the 905 Pokemon."
         />
         <meta
           name="image"
           property="og:image"
           content="/preview-images/resultsPreview.jpg"
+        />
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@elikeith404" />
+        <meta name="twitter:title" content="Results | PokeVote" />
+        <meta
+          name="twitter:description"
+          content="Statistical, objective, and non-biased calculations on the characteristics of the 905 Pokemon."
+        />
+        <meta
+          name="twitter:image"
+          content="https://poke-vote-elikeith404.vercel.app/preview-images/resultsPreview.jpg"
+        />
+        <meta
+          name="twitter:image:alt"
+          content="PokeVote's top 10 results page"
         />
       </Head>
       <div className="max-w-[900px] mx-auto md:px-5">

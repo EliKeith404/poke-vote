@@ -22,7 +22,27 @@ const HomePage: NextPage = () => {
           property="og:description"
           content="Settle debates on Pokemon characteristics through randomly generated 1v1 vote battles. Nothing more, nothing less. PokeVote will calculate totally unbiased and objective data points on the shape and character of the current 905 Pokemon."
         />
-        <meta property="og:image" content="/preview-images/indexPreview.jpg" />
+        <meta
+          name="image"
+          property="og:image"
+          content="/preview-images/indexPreview.jpg"
+        />
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@elikeith404" />
+        <meta name="twitter:title" content="PokeVote" />
+        <meta
+          name="twitter:description"
+          content="Settle debates on Pokemon characteristics through randomly generated 1v1 vote battles. Nothing more, nothing less. PokeVote will calculate totally unbiased and objective data points on the shape and character of the current 905 Pokemon."
+        />
+        <meta
+          name="twitter:image"
+          content="https://poke-vote-elikeith404.vercel.app/preview-images/indexPreview.jpg"
+        />
+        <meta
+          name="twitter:image:alt"
+          content="Homepage of PokeVote, rotating through the vote categories"
+        />
       </Head>
       <Container className="flex flex-col justify-center items-center h-full">
         <h1
