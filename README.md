@@ -19,7 +19,7 @@ Go vote at https://poke-vote-elikeith404.vercel.app/ !
 - [x] Host website
 - [x] Get a custom domain
 - [ ] Skeleton/Fallback/Loading page
-- [ ] Custom 404 page
+- [x] Custom 404 page
 - [x] Discord Auth
 - [ ] More Vote Categories
 - [ ] Tournament Bracket Generator
