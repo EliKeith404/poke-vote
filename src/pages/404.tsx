@@ -42,7 +42,7 @@ const PageNotFound = () => {
         <h1 className="text-3xl md:text-4xl text-center">
           404: Page Not Found!
         </h1>
-        <div className="-my-12">
+        <div className="-my-12 -z-10">
           <Image
             style={{ imageRendering: 'pixelated' }}
             src={
