@@ -57,7 +57,7 @@ const AboutPage: NextPage = () => {
 
           <Accordion.Item value="roundest">
             <Accordion.Control>
-              What happened to voting on the roundest??
+              What happened to solely voting on the roundest??
             </Accordion.Control>
             <Accordion.Panel>
               Some Pokemon don&apos;t fit into that category. Some are too sharp
