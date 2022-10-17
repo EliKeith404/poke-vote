@@ -21,6 +21,7 @@ Go vote at https://www.pokevote.com/ !
 - [ ] Skeleton/Fallback/Loading page
 - [x] Custom 404 page
 - [x] Discord Auth
+- [x] Admin Dashboard
 - [ ] More Vote Categories
 - [ ] Tournament Bracket Generator
 - [x] Meta tags and cards on social sites
@@ -28,6 +29,6 @@ Go vote at https://www.pokevote.com/ !
 
 ## Things Learned 🔖
 
-This is my very first TypeScript and MySQL project! Prisma is a very handy tool in making SQL queries and schemas straight-forward and easy. tRPC is used as my type-safe backend to smooth out the development process by enabling IntelliSense and making sure I'm handling all potential null values.
+This is my very first TypeScript and MySQL project! Prisma is a very handy tool in making SQL queries and relations straight-forward and easy. tRPC, a React Query wrapper, is used as my typesafe backend to smooth out the development process by enabling IntelliSense on the frontend-- no more assuming server data!
 
 There were of course a lot of hiccups getting my typings correct, but the tools I used guided me to the right path. From this point on I'll use TypeScript by default, and potentially consider converting my other projects to it as well.
