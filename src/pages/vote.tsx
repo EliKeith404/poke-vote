@@ -4,8 +4,10 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import type React from 'react';
 import { inferQueryOutput, trpc } from '../utils/trpc';
-import { Anchor, Button, Container, Paper, Space, Text } from '@mantine/core';
-import { signIn, useSession } from 'next-auth/react';
+import { Button, Container, Paper, Space } from '@mantine/core';
+
+import { Category } from '@prisma/client';
+import getRandomEnum from '../utils/getRandomEnum';
 
 const VoteHeader = () => {
   return (
@@ -44,11 +46,12 @@ const VoteHeader = () => {
 };
 
 const VotePage: NextPage = () => {
-  const [mounted, isMounted] = useState(false);
-  const { status } = useSession();
+  // Vote category, typing pulled from schema.prisma file
+  const [category, setCategory] = useState<Category>(Category.roundest);
 
   useEffect(() => {
-    isMounted(true);
+    const selectedCategory = getRandomEnum(Category);
+    setCategory(Category[selectedCategory as keyof typeof Category]);
   }, []);
 
   // Grab 2 Pokemon from database
@@ -70,11 +73,13 @@ const VotePage: NextPage = () => {
 
     if (selected === pokemon.first.id) {
       voteMutation.mutate({
+        category: category,
         votedFor: pokemon.first,
         votedAgainst: pokemon.second,
       });
     } else {
       voteMutation.mutate({
+        category: category,
         votedFor: pokemon.second,
         votedAgainst: pokemon.first,
       });
@@ -88,22 +93,6 @@ const VotePage: NextPage = () => {
 
   /////////////////////////////
   // Begin HTML Rendering
-  /*
-  if (status === 'unauthenticated') {
-    return (
-      <>
-        <VoteHeader />
-        <Container>
-          <h1>Access Denied</h1>
-          <Text>
-            Please <Anchor onClick={() => signIn('discord')}>sign in</Anchor> to
-            vote on categories!
-          </Text>
-        </Container>
-      </>
-    );
-  }
-  */
 
   if (isLoading || !pokemon) {
     return (
@@ -118,28 +107,30 @@ const VotePage: NextPage = () => {
     <>
       <VoteHeader />
       <Container className="h-full flex flex-col justify-center items-center px-2">
-        <h1 className="text-xl text-center">{`Which Pokemon is Rounder?`}</h1>
+        <h1 className="text-xl text-center">
+          Which Pokemon is the{' '}
+          <span className="capitalize underline underline-offset-[3px] text-green-300">
+            {category}
+          </span>{' '}
+          ?
+        </h1>
         <Space h={25} />
         <Paper
           className="flex justify-evenly items-center w-full max-w-[620px] p-2 animate-fade-in"
           withBorder
           radius="lg"
         >
-          {mounted && (
-            <PokemonListing
-              pokemon={pokemon.first}
-              vote={() => handleVote(pokemon.first.id)}
-              disabled={fetchingNext}
-            />
-          )}
+          <PokemonListing
+            pokemon={pokemon.first}
+            vote={() => handleVote(pokemon.first.id)}
+            disabled={fetchingNext}
+          />
           <span>vs.</span>
-          {mounted && (
-            <PokemonListing
-              pokemon={pokemon.second}
-              vote={() => handleVote(pokemon.second.id)}
-              disabled={fetchingNext}
-            />
-          )}
+          <PokemonListing
+            pokemon={pokemon.second}
+            vote={() => handleVote(pokemon.second.id)}
+            disabled={fetchingNext}
+          />
         </Paper>
       </Container>
     </>
@@ -170,7 +161,7 @@ const PokemonListing = ({
         <h2 className="text-sm md:text-xl capitalize">{pokemon.name}</h2>
         <div className="py-5 animate-fade-in">
           <Image
-            src={pokemon.spriteUrl}
+            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
             alt={`${pokemon.name}'s sprite image`}
             width={192}
             height={192}

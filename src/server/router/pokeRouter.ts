@@ -1,8 +1,9 @@
 import { createRouter } from './context';
 import { z } from 'zod';
+import { prisma } from '../db/client';
 
 import { getOptionsForVote } from '../../utils/getRandomPokemon';
-import { prisma } from '../db/client';
+import { Category } from '@prisma/client';
 
 export const pokeRouter = createRouter()
   .query('get-pokemon-pair', {
@@ -11,6 +12,10 @@ export const pokeRouter = createRouter()
 
       const bothPokemon = await prisma.pokemon.findMany({
         where: { id: { in: [firstId, secondId] } },
+        select: {
+          id: true,
+          name: true,
+        },
       });
 
       if (bothPokemon[0] == null || bothPokemon[1] == null) {
@@ -26,39 +31,38 @@ export const pokeRouter = createRouter()
     },
   })
   .query('get-ranking', {
-    async resolve() {
-      const topTen = await prisma.pokemon.findMany({
-        orderBy: { votesFor: { _count: 'desc' } },
+    input: z.object({
+      category: z.nativeEnum(Category),
+    }),
+    async resolve({ input }) {
+      const pokemonVotes = await prisma.pokemon.findMany({
         select: {
           id: true,
           name: true,
-          spriteUrl: true,
-          _count: {
-            select: { votesFor: true, votesAgainst: true },
-          },
+          votesFor: { where: { category: input.category } },
+          votesAgainst: { where: { category: input.category } },
         },
-        take: 10,
       });
 
-      return topTen;
+      return pokemonVotes;
     },
   })
   .mutation('cast-vote', {
     input: z.object({
+      category: z.nativeEnum(Category),
       votedFor: z.object({
         id: z.number(),
         name: z.string(),
-        spriteUrl: z.string(),
       }),
       votedAgainst: z.object({
         id: z.number(),
         name: z.string(),
-        spriteUrl: z.string(),
       }),
     }),
     async resolve({ input }) {
       const voteInDb = await prisma.vote.create({
         data: {
+          category: input.category,
           votedForId: input.votedFor.id,
           votedAgainstId: input.votedAgainst.id,
         },
