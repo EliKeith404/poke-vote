@@ -23,6 +23,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, user }) {
       if (session.user) {
+        session.user.assignedCategory = user.assignedCategory;
         session.user.role = user.role;
         session.user.id = user.id;
       }
