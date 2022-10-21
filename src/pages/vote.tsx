@@ -8,6 +8,7 @@ import { Button, Container, Paper, Space } from '@mantine/core';
 
 import { Category } from '@prisma/client';
 import getRandomEnum from '../utils/getRandomEnum';
+import { useSession } from 'next-auth/react';
 
 const VoteHeader = () => {
   return (
@@ -45,11 +46,46 @@ const VoteHeader = () => {
   );
 };
 
+const colorMap = (category: Category) => {
+  let color = 'text-white';
+
+  switch (category) {
+    case 'roundest':
+      color = 'text-cyan-300';
+      break;
+    case 'sharpest':
+      color = 'text-yellow-300';
+      break;
+    case 'meanest':
+      color = 'text-red-400';
+      break;
+    case 'friendliest':
+      color = 'text-pink-300';
+      break;
+    case 'wackiest':
+      color = 'text-orange-300';
+      break;
+    case 'tastiest':
+      color = 'text-pink-500';
+      break;
+    case 'rowdiest':
+      color = 'text-green-300';
+      break;
+    default:
+      break;
+  }
+
+  return color;
+};
+
 const VotePage: NextPage = () => {
   // Vote category, typing pulled from schema.prisma file
   const [category, setCategory] = useState<Category>(Category.roundest);
+  const { data: session } = useSession();
 
   useEffect(() => {
+    // TODO: Grab category from local storage and set it, if it doesnt exist, generate it.
+    // Or finish login get/set
     const selectedCategory = getRandomEnum(Category);
     setCategory(Category[selectedCategory as keyof typeof Category]);
   }, []);
@@ -108,10 +144,14 @@ const VotePage: NextPage = () => {
       <VoteHeader />
       <Container className="h-full flex flex-col justify-center items-center px-2">
         <h1 className="text-xl text-center">
-          Which Pokemon is the{' '}
-          <span className="capitalize underline underline-offset-[3px] text-green-300">
-            {category}
-          </span>{' '}
+          Which Pokemon is{' '}
+          <span
+            className={`capitalize underline underline-offset-[3px] ${colorMap(
+              category
+            )}`}
+          >
+            {category.slice(0, -2) + 'r'}
+          </span>
           ?
         </h1>
         <Space h={25} />
