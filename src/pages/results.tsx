@@ -1,51 +1,87 @@
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import Image from 'next/image';
-import React from 'react';
-import { prisma } from '../server/db/client';
+import React, { useEffect, useState } from 'react';
 import { inferAsyncReturnType } from '@trpc/server';
-import { Paper } from '@mantine/core';
+import { NativeSelect, Paper } from '@mantine/core';
 import Head from 'next/head';
+import { Category } from '@prisma/client';
+import getPokemonWithVotes from '../lib/getPokemonWithVotes';
 
-// Get Pokemon from database, ordered by vote count
-const getRankedPokemon = async () => {
-  return await prisma.pokemon.findMany({
-    orderBy: { votesFor: { _count: 'desc' } },
-    select: {
-      id: true,
-      name: true,
-      spriteUrl: true,
-      _count: {
-        select: { votesFor: true, votesAgainst: true },
-      },
+export const getStaticProps: GetStaticProps = async () => {
+  const pokemon = await getPokemonWithVotes();
+  const TWELVE_HOUR_IN_SEC = 12 * 60 * 60; // Every 12 hours, refetch data
+
+  return {
+    props: {
+      pokemonList: pokemon,
     },
-    take: 100,
-  });
+    revalidate: TWELVE_HOUR_IN_SEC,
+  };
 };
 
 // Get type of object returned from the database
-type PokemonQueryResult = inferAsyncReturnType<typeof getRankedPokemon>;
+type PokemonQueryResult = inferAsyncReturnType<typeof getPokemonWithVotes>;
 
-const calcVotePercent = (pokemon: PokemonQueryResult[0]) => {
-  const { votesFor, votesAgainst } = pokemon._count;
+const calcVotePercent = (votesFor: number, votesAgainst: number) => {
   if (votesFor + votesAgainst === 0) return 0;
 
   return (votesFor / (votesFor + votesAgainst)) * 100;
 };
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  // Get top 10 pokemon based on votesFor count
-  const rankedPokemon = await getRankedPokemon();
-  //const HOUR_IN_SEC = 1 * 60 * 60;
+const rankPokemon = (pokemonList: PokemonQueryResult, category: Category) => {
+  const pokeListRanked = [];
 
-  return {
-    props: {
-      rankedPokemon: rankedPokemon,
-    },
-  };
+  for (const pokemon of pokemonList) {
+    const votesForCount = pokemon.votesFor.filter(
+      (vote) => vote.category === category
+    ).length;
+    const votesAgainstCount = pokemon.votesAgainst.filter(
+      (vote) => vote.category === category
+    ).length;
+
+    const votePercent = calcVotePercent(votesForCount, votesAgainstCount);
+
+    const pokeObject = {
+      name: pokemon.name,
+      id: pokemon.id,
+      votesFor: votesForCount,
+      votesAgainst: votesAgainstCount,
+      votePercent: votePercent,
+    };
+
+    pokeListRanked.push(pokeObject);
+  }
+
+  // Return the sorted top 10 pokemon of the category
+  return pokeListRanked
+    .sort((a, b) => {
+      const difference = b.votePercent - a.votePercent;
+
+      if (difference === 0) {
+        return b.votesFor - a.votesFor;
+      }
+
+      return difference;
+    })
+    .slice(0, 10);
 };
 
-const Results = ({ rankedPokemon }: { rankedPokemon: PokemonQueryResult }) => {
-  if (!rankedPokemon) return <div>Loading...</div>;
+const Results = ({ pokemonList }: { pokemonList: PokemonQueryResult }) => {
+  // States
+  const [selectedCategory, setSelectedCategory] = useState<Category>(
+    Category.roundest
+  );
+  const [pokemonListRanked, setPokemonListRanked] = useState<ReturnType<
+    typeof rankPokemon
+  > | null>(null);
+
+  // useEffect to update the pokemon list when the category input is changed
+  useEffect(() => {
+    const pokemonVoteCount = rankPokemon(pokemonList, selectedCategory);
+    setPokemonListRanked(pokemonVoteCount);
+  }, [pokemonList, selectedCategory]);
+
+  if (!pokemonList || !pokemonListRanked) return <div>Loading...</div>;
 
   return (
     <>
@@ -82,19 +118,21 @@ const Results = ({ rankedPokemon }: { rankedPokemon: PokemonQueryResult }) => {
       </Head>
       <div className="max-w-[900px] mx-auto md:px-5">
         <h1 className="text-2xl md:text-3xl">Results</h1>
+        <div className="grid grid-cols-2 pb-5">
+          <NativeSelect
+            className="col-span-2 md:col-span-1"
+            data={Object.keys(Category)}
+            label="Category"
+            onChange={(e) =>
+              setSelectedCategory(
+                e.currentTarget.value as keyof typeof Category
+              )
+            }
+          />
+        </div>
         <div>
-          {rankedPokemon
-            .sort((a, b) => {
-              const difference = calcVotePercent(b) - calcVotePercent(a);
-
-              if (difference === 0) {
-                return b._count.votesFor - a._count.votesFor;
-              }
-
-              return difference;
-            })
-            .slice(0, 10)
-            .map((pokemon, i) => {
+          {pokemonListRanked &&
+            pokemonListRanked.map((pokemon, i) => {
               return <PokemonListItem pokemon={pokemon} rank={i + 1} key={i} />;
             })}
         </div>
@@ -112,7 +150,7 @@ const PokemonListItem = ({
   pokemon,
   rank,
 }: {
-  pokemon: PokemonQueryResult[0];
+  pokemon: ReturnType<typeof rankPokemon>[0];
   rank: number;
 }) => {
   return (
@@ -120,7 +158,7 @@ const PokemonListItem = ({
       <span className="text-sm md:text-lg m-auto">#{rank}</span>
       <div className="mx-auto">
         <Image
-          src={pokemon.spriteUrl}
+          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
           alt={`${pokemon.name}'s Sprite Image`}
           width={112}
           height={112}
@@ -132,7 +170,7 @@ const PokemonListItem = ({
         <span className="capitalize text-sm md:text-lg">{pokemon.name}</span>
       </div>
       <p className="text-sm md:text-lg px-5 m-auto">
-        {calcVotePercent(pokemon).toFixed(2)}%
+        {pokemon.votePercent.toFixed(2)}%
       </p>
     </Paper>
   );
