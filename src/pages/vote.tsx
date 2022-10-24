@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import type React from 'react';
 import { inferQueryOutput, trpc } from '../utils/trpc';
-import { Button, Container, Paper, Space } from '@mantine/core';
+import { Button, Container, NativeSelect, Paper, Space } from '@mantine/core';
 
 import { Category } from '@prisma/client';
 import getRandomEnum from '../utils/getRandomEnum';
@@ -84,11 +84,18 @@ const VotePage: NextPage = () => {
   const { data: session } = useSession();
 
   useEffect(() => {
-    // TODO: Grab category from local storage and set it, if it doesnt exist, generate it.
-    // Or finish login get/set
-    const selectedCategory = getRandomEnum(Category);
-    setCategory(Category[selectedCategory as keyof typeof Category]);
-  }, []);
+    if (session?.user) {
+      // If a user is logged in, use their assigned category, if no category, generate one
+      const userCategory =
+        session.user.assignedCategory ||
+        (getRandomEnum(Category) as keyof typeof Category);
+
+      setCategory(userCategory);
+    } else {
+      const selectedCategory = getRandomEnum(Category) as keyof typeof Category;
+      setCategory(Category[selectedCategory]);
+    }
+  }, [session]);
 
   // Grab 2 Pokemon from database
   const {
@@ -143,7 +150,7 @@ const VotePage: NextPage = () => {
     <>
       <VoteHeader />
       <Container className="h-full flex flex-col justify-center items-center px-2">
-        <h1 className="text-xl text-center">
+        {/* <h1 className="text-xl text-center">
           Which Pokemon is{' '}
           <span
             className={`capitalize underline underline-offset-[3px] ${colorMap(
@@ -153,6 +160,16 @@ const VotePage: NextPage = () => {
             {category.slice(0, -2) + 'r'}
           </span>
           ?
+            </h1> */}
+        <h1 className="text-xl text-center flex">
+          Which Pokemon is
+          <NativeSelect
+            className="px-4"
+            data={Object.keys(Category)}
+            onChange={(e) =>
+              setCategory(e.currentTarget.value as keyof typeof Category)
+            }
+          />
         </h1>
         <Space h={25} />
         <Paper
