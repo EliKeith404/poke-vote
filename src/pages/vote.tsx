@@ -92,10 +92,16 @@ const VotePage: NextPage = () => {
 
       setCategory(userCategory);
     } else {
-      const selectedCategory = getRandomEnum(Category) as keyof typeof Category;
-      setCategory(Category[selectedCategory]);
+      setEnum();
     }
   }, [session]);
+
+  const setEnum = (): void => {
+    const selectedCategory = getRandomEnum(Category) as keyof typeof Category;
+    if (selectedCategory === category) return setEnum();
+    setCategory(Category[selectedCategory]);
+    refetch();
+  };
 
   // Grab 2 Pokemon from database
   const {
@@ -150,7 +156,7 @@ const VotePage: NextPage = () => {
     <>
       <VoteHeader />
       <Container className="h-full flex flex-col justify-center items-center px-2">
-        {/* <h1 className="text-xl text-center">
+        <h1 className="text-xl text-center">
           Which Pokemon is{' '}
           <span
             className={`capitalize underline underline-offset-[3px] ${colorMap(
@@ -160,18 +166,17 @@ const VotePage: NextPage = () => {
             {category.slice(0, -2) + 'r'}
           </span>
           ?
-            </h1> */}
-        <h1 className="text-xl text-center flex">
-          Which Pokemon is
-          <NativeSelect
-            className="px-4"
-            data={Object.keys(Category)}
-            onChange={(e) =>
-              setCategory(e.currentTarget.value as keyof typeof Category)
-            }
-          />
         </h1>
         <Space h={25} />
+        <p>
+          Don&apos;t like the category?{' '}
+          <a
+            className="cursor-pointer text-blue-400 hover:underline"
+            onClick={() => setEnum()}
+          >
+            Generate a new one
+          </a>
+        </p>
         <Paper
           className="flex justify-evenly items-center w-full max-w-[620px] p-2 animate-fade-in"
           withBorder
