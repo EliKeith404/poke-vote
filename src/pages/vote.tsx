@@ -121,12 +121,14 @@ const VotePage: NextPage = () => {
 
     if (selected === pokemon.first.id) {
       voteMutation.mutate({
+        submittedById: session?.user?.id,
         category: category,
         votedFor: pokemon.first,
         votedAgainst: pokemon.second,
       });
     } else {
       voteMutation.mutate({
+        submittedById: session?.user?.id,
         category: category,
         votedFor: pokemon.second,
         votedAgainst: pokemon.first,
