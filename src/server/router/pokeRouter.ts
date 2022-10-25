@@ -69,6 +69,7 @@ export const pokeRouter = createRouter()
   })
   .mutation('cast-vote', {
     input: z.object({
+      submittedById: z.string().optional(),
       category: z.nativeEnum(Category),
       votedFor: z.object({
         id: z.number(),
@@ -82,6 +83,7 @@ export const pokeRouter = createRouter()
     async resolve({ input }) {
       const voteInDb = await prisma.vote.create({
         data: {
+          submittedById: input.submittedById,
           category: input.category,
           votedForId: input.votedFor.id,
           votedAgainstId: input.votedAgainst.id,

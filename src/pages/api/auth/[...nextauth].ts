@@ -24,6 +24,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, user }) {
       if (session.user) {
         session.user.assignedCategory = user.assignedCategory;
+        session.user.votes = user.votes;
         session.user.role = user.role;
         session.user.id = user.id;
       }

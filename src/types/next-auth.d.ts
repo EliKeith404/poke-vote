@@ -1,4 +1,4 @@
-import { Category, Role } from '@prisma/client';
+import { Category, Role, Vote } from '@prisma/client';
 import { DefaultSession } from 'next-auth';
 
 declare module 'next-auth' {
@@ -10,11 +10,13 @@ declare module 'next-auth' {
       id: string;
       role: Role;
       assignedCategory: Category;
+      votes: Vote[];
     } & DefaultSession['user'];
   }
 
   interface User {
     role: Role;
     assignedCategory: Category;
+    votes: Vote[];
   }
 }
