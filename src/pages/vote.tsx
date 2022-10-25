@@ -4,11 +4,11 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import type React from 'react';
 import { inferQueryOutput, trpc } from '../utils/trpc';
-import { Button, Container, NativeSelect, Paper, Space } from '@mantine/core';
+import { Button, Container, Paper, Space } from '@mantine/core';
+import { useSession } from 'next-auth/react';
 
 import { Category } from '@prisma/client';
-import getRandomEnum from '../utils/getRandomEnum';
-import { useSession } from 'next-auth/react';
+import getRandomCategory from '../utils/getRandomCategory';
 
 const VoteHeader = () => {
   return (
@@ -86,22 +86,21 @@ const VotePage: NextPage = () => {
   useEffect(() => {
     if (session?.user) {
       // If a user is logged in, use their assigned category, if no category, generate one
-      const userCategory =
-        session.user.assignedCategory ||
-        (getRandomEnum(Category) as keyof typeof Category);
+      const userCategory = session.user.assignedCategory || getRandomCategory();
 
       setCategory(userCategory);
     } else {
-      setEnum();
+      refetchCategory();
     }
   }, [session]);
 
-  const setEnum = (): void => {
-    const selectedCategory = getRandomEnum(Category) as keyof typeof Category;
-    if (selectedCategory === category) return setEnum();
-    setCategory(Category[selectedCategory]);
+  function refetchCategory(): void {
+    const randomizedCategory = getRandomCategory();
+    if (randomizedCategory === category) return refetchCategory();
+
+    setCategory(randomizedCategory);
     refetch();
-  };
+  }
 
   // Grab 2 Pokemon from database
   const {
@@ -172,7 +171,7 @@ const VotePage: NextPage = () => {
           Don&apos;t like the category?{' '}
           <a
             className="cursor-pointer text-blue-400 hover:underline"
-            onClick={() => setEnum()}
+            onClick={() => refetchCategory()}
           >
             Generate a new one
           </a>

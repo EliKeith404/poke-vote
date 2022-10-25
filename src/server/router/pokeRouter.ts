@@ -4,7 +4,7 @@ import { prisma } from '../db/client';
 
 import { getOptionsForVote } from '../../utils/getRandomPokemon';
 import { Category } from '@prisma/client';
-import getRandomEnum from '../../utils/getRandomEnum';
+import getRandomCategory from '../../utils/getRandomCategory';
 
 export const pokeRouter = createRouter()
   .query('get-pokemon-pair', {
@@ -53,7 +53,7 @@ export const pokeRouter = createRouter()
       userid: z.string(),
     }),
     async resolve({ input }) {
-      const randCategory = getRandomEnum(Category) as keyof typeof Category;
+      const randCategory = getRandomCategory();
 
       const randomizedDb = await prisma.user.update({
         where: {

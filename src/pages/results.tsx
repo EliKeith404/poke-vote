@@ -28,7 +28,10 @@ const calcVotePercent = (votesFor: number, votesAgainst: number) => {
   return (votesFor / (votesFor + votesAgainst)) * 100;
 };
 
-const rankPokemon = (pokemonList: PokemonQueryResult, category: Category) => {
+const calcTopTenPokemon = (
+  pokemonList: PokemonQueryResult,
+  category: Category
+) => {
   const pokeListRanked = [];
 
   for (const pokemon of pokemonList) {
@@ -72,12 +75,12 @@ const Results = ({ pokemonList }: { pokemonList: PokemonQueryResult }) => {
     Category.roundest
   );
   const [pokemonListRanked, setPokemonListRanked] = useState<ReturnType<
-    typeof rankPokemon
+    typeof calcTopTenPokemon
   > | null>(null);
 
   // useEffect to update the pokemon list when the category input is changed
   useEffect(() => {
-    const pokemonVoteCount = rankPokemon(pokemonList, selectedCategory);
+    const pokemonVoteCount = calcTopTenPokemon(pokemonList, selectedCategory);
     setPokemonListRanked(pokemonVoteCount);
   }, [pokemonList, selectedCategory]);
 
@@ -150,7 +153,7 @@ const PokemonListItem = ({
   pokemon,
   rank,
 }: {
-  pokemon: ReturnType<typeof rankPokemon>[0];
+  pokemon: ReturnType<typeof calcTopTenPokemon>[0];
   rank: number;
 }) => {
   return (

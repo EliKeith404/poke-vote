@@ -94,4 +94,7 @@ enum Category {
     wackiest
     tastiest
     rowdiest
+    fanciest
+    sneakiest
+    smelliest
 }
