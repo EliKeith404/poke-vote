@@ -40,8 +40,20 @@ export const pokeRouter = createRouter()
         select: {
           id: true,
           name: true,
-          votesFor: { where: { category: input.category } },
-          votesAgainst: { where: { category: input.category } },
+          _count: {
+            select: {
+              votesFor: {
+                where: {
+                  category: input.category,
+                },
+              },
+              votesAgainst: {
+                where: {
+                  category: input.category,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -89,6 +101,7 @@ export const pokeRouter = createRouter()
           votedAgainstId: input.votedAgainst.id,
         },
       });
+      // TODO: Calculate vote % and vote weight here to reduce data fetch.
 
       return { success: true, vote: voteInDb };
     },

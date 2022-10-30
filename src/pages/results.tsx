@@ -1,26 +1,12 @@
-import { GetStaticProps } from 'next';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { inferAsyncReturnType } from '@trpc/server';
 import { NativeSelect, Paper } from '@mantine/core';
 import Head from 'next/head';
 import { Category } from '@prisma/client';
-import getPokemonWithVotes from '../lib/getPokemonWithVotes';
-
-export const getStaticProps: GetStaticProps = async () => {
-  const pokemon = await getPokemonWithVotes();
-  const TWELVE_HOUR_IN_SEC = 12 * 60 * 60; // Every 12 hours, refetch data
-
-  return {
-    props: {
-      pokemonList: pokemon,
-    },
-    revalidate: TWELVE_HOUR_IN_SEC,
-  };
-};
+import { inferQueryOutput, trpc } from '../utils/trpc';
 
 // Get type of object returned from the database
-type PokemonQueryResult = inferAsyncReturnType<typeof getPokemonWithVotes>;
+type PokemonRankingResult = inferQueryOutput<'poke.get-ranking'>;
 
 const calcVotePercent = (votesFor: number, votesAgainst: number) => {
   if (votesFor + votesAgainst === 0) return 0;
@@ -28,27 +14,18 @@ const calcVotePercent = (votesFor: number, votesAgainst: number) => {
   return (votesFor / (votesFor + votesAgainst)) * 100;
 };
 
-const calcTopTenPokemon = (
-  pokemonList: PokemonQueryResult,
-  category: Category
-) => {
+const calcTopTenPokemon = (pokemonList: PokemonRankingResult) => {
   const pokeListRanked = [];
 
   for (const pokemon of pokemonList) {
-    const votesForCount = pokemon.votesFor.filter(
-      (vote) => vote.category === category
-    ).length;
-    const votesAgainstCount = pokemon.votesAgainst.filter(
-      (vote) => vote.category === category
-    ).length;
-
-    const votePercent = calcVotePercent(votesForCount, votesAgainstCount);
+    const { votesFor, votesAgainst } = pokemon._count;
+    const votePercent = calcVotePercent(votesFor, votesAgainst);
 
     const pokeObject = {
       name: pokemon.name,
       id: pokemon.id,
-      votesFor: votesForCount,
-      votesAgainst: votesAgainstCount,
+      votesFor: votesFor,
+      votesAgainst: votesAgainst,
       votePercent: votePercent,
     };
 
@@ -69,7 +46,7 @@ const calcTopTenPokemon = (
     .slice(0, 10);
 };
 
-const Results = ({ pokemonList }: { pokemonList: PokemonQueryResult }) => {
+const Results = () => {
   // States
   const [selectedCategory, setSelectedCategory] = useState<Category>(
     Category.roundest
@@ -78,13 +55,30 @@ const Results = ({ pokemonList }: { pokemonList: PokemonQueryResult }) => {
     typeof calcTopTenPokemon
   > | null>(null);
 
-  // useEffect to update the pokemon list when the category input is changed
-  useEffect(() => {
-    const pokemonVoteCount = calcTopTenPokemon(pokemonList, selectedCategory);
-    setPokemonListRanked(pokemonVoteCount);
-  }, [pokemonList, selectedCategory]);
+  // Get data from database
+  const { data: pokemonVoteCount, refetch } = trpc.useQuery(
+    ['poke.get-ranking', { category: selectedCategory }],
+    {
+      refetchInterval: false,
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  if (!pokemonList || !pokemonListRanked) return <div>Loading...</div>;
+  // Recalculate data when category is changed
+  useEffect(() => {
+    if (pokemonVoteCount != null) {
+      setPokemonListRanked(calcTopTenPokemon(pokemonVoteCount));
+    }
+  }, [pokemonVoteCount]);
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(e.currentTarget.value as keyof typeof Category);
+    refetch();
+  };
+
+  //if (isLoading || !pokemonListRanked || !pokemonVoteCount)
+  // return <div>Loading...</div>;
 
   return (
     <>
@@ -126,11 +120,7 @@ const Results = ({ pokemonList }: { pokemonList: PokemonQueryResult }) => {
             className="col-span-2 md:col-span-1"
             data={Object.keys(Category)}
             label="Category"
-            onChange={(e) =>
-              setSelectedCategory(
-                e.currentTarget.value as keyof typeof Category
-              )
-            }
+            onChange={(e) => handleCategoryChange(e)}
           />
         </div>
         <div>
