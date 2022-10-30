@@ -169,14 +169,14 @@ const VotePage: NextPage = () => {
           ?
         </h1>
         <Space h={25} />
-        <p>
+        <p className="text-center">
           Don&apos;t like the category?{' '}
-          <a
-            className="cursor-pointer text-blue-400 hover:underline"
+          <button
+            className="cursor-pointer text-blue-400 hover:underline bg-transparent p-0 border-none"
             onClick={() => refetchCategory()}
           >
             Generate a new one
-          </a>
+          </button>
         </p>
         <Paper
           className="flex justify-evenly items-center w-full max-w-[620px] p-2 animate-fade-in"
