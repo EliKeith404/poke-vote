@@ -93,10 +93,6 @@ const VotePage: NextPage = () => {
     } else {
       refetchCategory();
     }
-    if (nextPokemonPair) {
-      setPokemonPair(nextPokemonPair);
-      refetch();
-    }
   }, [session]);
 
   const setNextPokemonPair = () => {
@@ -106,13 +102,13 @@ const VotePage: NextPage = () => {
     }
   };
 
-  function refetchCategory(): void {
+  const refetchCategory = (): void => {
     const randomizedCategory = getRandomCategory();
     if (randomizedCategory === category) return refetchCategory();
 
     setCategory(randomizedCategory);
     setNextPokemonPair();
-  }
+  };
 
   // Grab 2 Pokemon from database
   const { data: nextPokemonPair, refetch } = trpc.useQuery(
@@ -123,6 +119,10 @@ const VotePage: NextPage = () => {
       refetchOnWindowFocus: false,
     }
   );
+
+  if (!pokemonPair && nextPokemonPair) {
+    setNextPokemonPair();
+  }
 
   // Vote Handler
   const voteMutation = trpc.useMutation(['poke.cast-vote']);
