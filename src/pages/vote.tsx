@@ -81,6 +81,7 @@ const colorMap = (category: Category) => {
 const VotePage: NextPage = () => {
   // Vote category, typing pulled from schema.prisma file
   const [category, setCategory] = useState<Category>(Category.roundest);
+  const [pokemonPair, setPokemonPair] = useState<PokemonObject | null>(null);
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -92,66 +93,67 @@ const VotePage: NextPage = () => {
     } else {
       refetchCategory();
     }
+    if (nextPokemonPair) {
+      setPokemonPair(nextPokemonPair);
+      refetch();
+    }
   }, [session]);
+
+  const setNextPokemonPair = () => {
+    if (nextPokemonPair) {
+      setPokemonPair(nextPokemonPair);
+      refetch();
+    }
+  };
 
   function refetchCategory(): void {
     const randomizedCategory = getRandomCategory();
     if (randomizedCategory === category) return refetchCategory();
 
     setCategory(randomizedCategory);
-    refetch();
+    setNextPokemonPair();
   }
 
   // Grab 2 Pokemon from database
-  const {
-    data: pokemon,
-    refetch,
-    isLoading,
-  } = trpc.useQuery(['poke.get-pokemon-pair'], {
-    refetchInterval: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-  });
+  const { data: nextPokemonPair, refetch } = trpc.useQuery(
+    ['poke.get-pokemon-pair'],
+    {
+      refetchInterval: false,
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   // Vote Handler
   const voteMutation = trpc.useMutation(['poke.cast-vote']);
 
   const handleVote = (selected: number) => {
-    if (!pokemon) return; // Early escape if pokemon could not be fetched
+    if (!pokemonPair) return; // Early escape if pokemon could not be fetched
 
-    if (selected === pokemon.first.id) {
+    if (selected === pokemonPair.first.id) {
       voteMutation.mutate({
         submittedById: session?.user?.id,
         category: category,
-        votedFor: pokemon.first,
-        votedAgainst: pokemon.second,
+        votedFor: pokemonPair.first,
+        votedAgainst: pokemonPair.second,
       });
     } else {
       voteMutation.mutate({
         submittedById: session?.user?.id,
         category: category,
-        votedFor: pokemon.second,
-        votedAgainst: pokemon.first,
+        votedFor: pokemonPair.second,
+        votedAgainst: pokemonPair.first,
       });
     }
 
-    refetch();
+    setNextPokemonPair();
   };
 
   // If the vote is loading or data is still being retrieved, disable buttons
-  const fetchingNext = voteMutation.isLoading || isLoading;
+  const fetchingNext = !pokemonPair;
 
   /////////////////////////////
   // Begin HTML Rendering
-
-  if (isLoading || !pokemon) {
-    return (
-      <>
-        <VoteHeader />
-        <div>Loading...</div>
-      </>
-    );
-  }
 
   return (
     <>
@@ -178,23 +180,25 @@ const VotePage: NextPage = () => {
             Generate a new one
           </button>
         </p>
-        <Paper
-          className="flex justify-evenly items-center w-full max-w-[620px] p-2 animate-fade-in"
-          withBorder
-          radius="lg"
-        >
-          <PokemonListing
-            pokemon={pokemon.first}
-            vote={() => handleVote(pokemon.first.id)}
-            disabled={fetchingNext}
-          />
-          <span>vs.</span>
-          <PokemonListing
-            pokemon={pokemon.second}
-            vote={() => handleVote(pokemon.second.id)}
-            disabled={fetchingNext}
-          />
-        </Paper>
+        {pokemonPair && (
+          <Paper
+            className="flex justify-evenly items-center w-full max-w-[620px] p-2 animate-fade-in"
+            withBorder
+            radius="lg"
+          >
+            <PokemonListing
+              pokemon={pokemonPair.first}
+              vote={() => handleVote(pokemonPair.first.id)}
+              disabled={fetchingNext}
+            />
+            <span>vs.</span>
+            <PokemonListing
+              pokemon={pokemonPair.second}
+              vote={() => handleVote(pokemonPair.second.id)}
+              disabled={fetchingNext}
+            />
+          </Paper>
+        )}
       </Container>
     </>
   );
@@ -203,33 +207,41 @@ const VotePage: NextPage = () => {
 export default VotePage;
 
 // Pokemon Listing Component
-type ServerType = inferQueryOutput<'poke.get-pokemon-pair'>['first'];
+type PokemonType = inferQueryOutput<'poke.get-pokemon-pair'>['first'];
+type PokemonObject = inferQueryOutput<'poke.get-pokemon-pair'>;
 
-const PokemonListing = ({
-  pokemon,
-  vote,
-  disabled,
-}: {
-  pokemon: ServerType;
+interface PokemonListing {
+  pokemon: PokemonType;
   vote: () => void;
   disabled: boolean;
-}) => {
+}
+
+const PokemonListing = ({ pokemon, vote, disabled }: PokemonListing) => {
+  //disabled = true;
   return (
     <div className={`flex flex-col justify-center items-center`}>
       <div
         className={`flex flex-col justify-center items-center transition-opacity ${
-          disabled && 'opacity-0'
+          disabled && 'animate-pulse'
         }`}
       >
-        <h2 className="text-sm md:text-xl capitalize">{pokemon.name}</h2>
+        {disabled ? (
+          <div className="w-40 h-5 bg-slate-700 rounded-lg my-[1.45rem]" />
+        ) : (
+          <h2 className="text-sm md:text-xl capitalize">{pokemon.name}</h2>
+        )}
         <div className="py-5 animate-fade-in">
-          <Image
-            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
-            alt={`${pokemon.name}'s sprite image`}
-            width={192}
-            height={192}
-            style={{ imageRendering: 'pixelated' }}
-          />
+          {disabled ? (
+            <div className="w-[192px] h-[192px] bg-slate-700 rounded-lg" />
+          ) : (
+            <Image
+              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
+              alt={`${pokemon.name}'s sprite image`}
+              width={192}
+              height={192}
+              style={{ imageRendering: 'pixelated' }}
+            />
+          )}
         </div>
       </div>
 
