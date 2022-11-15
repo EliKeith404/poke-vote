@@ -82,33 +82,8 @@ const VotePage: NextPage = () => {
   // Vote category, typing pulled from schema.prisma file
   const [category, setCategory] = useState<Category>(Category.roundest);
   const [pokemonPair, setPokemonPair] = useState<PokemonObject | null>(null);
+  const [mounted, setMounted] = useState(false);
   const { data: session } = useSession();
-
-  useEffect(() => {
-    if (session?.user) {
-      // If a user is logged in, use their assigned category, if no category, generate one
-      const userCategory = session.user.assignedCategory || getRandomCategory();
-
-      setCategory(userCategory);
-    } else {
-      refetchCategory();
-    }
-  }, [session]);
-
-  const setNextPokemonPair = () => {
-    if (nextPokemonPair) {
-      setPokemonPair(nextPokemonPair);
-      refetch();
-    }
-  };
-
-  const refetchCategory = (): void => {
-    const randomizedCategory = getRandomCategory();
-    if (randomizedCategory === category) return refetchCategory();
-
-    setCategory(randomizedCategory);
-    setNextPokemonPair();
-  };
 
   // Grab 2 Pokemon from database
   const { data: nextPokemonPair, refetch } = trpc.useQuery(
@@ -120,9 +95,37 @@ const VotePage: NextPage = () => {
     }
   );
 
-  if (!pokemonPair && nextPokemonPair) {
-    setNextPokemonPair();
-  }
+  useEffect(() => {
+    const setNextPokemonPair = (): void => {
+      if (nextPokemonPair) {
+        setPokemonPair(nextPokemonPair);
+        refetch();
+      }
+    };
+
+    if (session?.user) {
+      // If a user is logged in, use their assigned category, if no category, generate one
+      const userCategory = session.user.assignedCategory || getRandomCategory();
+
+      setCategory(userCategory);
+      setMounted(true);
+    } else if (!session && !mounted) {
+      refetchCategory();
+      setMounted(true);
+    }
+
+    if (pokemonPair == null && nextPokemonPair) {
+      setNextPokemonPair();
+    }
+  }, [session, pokemonPair, nextPokemonPair]);
+
+  const refetchCategory = (): void => {
+    const randomizedCategory = getRandomCategory();
+    if (randomizedCategory === category) return refetchCategory();
+
+    setCategory(randomizedCategory);
+    setPokemonPair(null);
+  };
 
   // Vote Handler
   const voteMutation = trpc.useMutation(['poke.cast-vote']);
@@ -146,7 +149,7 @@ const VotePage: NextPage = () => {
       });
     }
 
-    setNextPokemonPair();
+    setPokemonPair(null);
   };
 
   // If the vote is loading or data is still being retrieved, disable buttons
@@ -171,18 +174,20 @@ const VotePage: NextPage = () => {
           ?
         </h1>
         <Space h={25} />
-        <p className="text-center">
-          Don&apos;t like the category?{' '}
-          <button
-            className="cursor-pointer text-blue-400 hover:underline bg-transparent p-0 border-none"
-            onClick={() => refetchCategory()}
-          >
-            Generate a new one
-          </button>
-        </p>
+        {!session && (
+          <p className="text-center">
+            Don&apos;t like the category?{' '}
+            <button
+              className="cursor-pointer text-blue-400 hover:underline bg-transparent p-0 border-none"
+              onClick={() => refetchCategory()}
+            >
+              Generate a new one
+            </button>
+          </p>
+        )}
         {pokemonPair && (
           <Paper
-            className="flex justify-evenly items-center w-full max-w-[620px] p-2 animate-fade-in"
+            className="flex justify-evenly items-center w-full max-w-[620px] p-2"
             withBorder
             radius="lg"
           >
