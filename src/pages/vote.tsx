@@ -86,7 +86,7 @@ const VotePage: NextPage = () => {
   // Vote category, typing pulled from schema.prisma file
   const [category, setCategory] = useState<Category>(Category.roundest);
   const [pokemonPair, setPokemonPair] = useState<PokemonPairType | null>(null);
-  const [fetchNextPokemonPair, setFetchNextPokemonPair] = useState(false);
+  const [fetchNextPokemonPair, setFetchNextPokemonPair] = useState(true);
   const [pokemonPairLoading, setPokemonPairLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const { data: session } = useSession();
@@ -189,33 +189,25 @@ const VotePage: NextPage = () => {
           ?
         </h1>
         <Space h={25} />
-        {/* 
-        <button onClick={() => setPokemonPairLoading((prev) => !prev)}>
-          Toggles Disabled
-        </button>
-        */}
-
-        {
-          <Paper
-            className="flex justify-evenly items-center w-full max-w-[620px] p-2"
-            withBorder
-            radius="lg"
-          >
-            <PokemonListing
-              pokemon={pokemonPair?.first}
-              vote={() => handleVote(pokemonPair?.first.id)}
-              disabled={pokemonPairLoading}
-              loadingNext={fetchNextPokemonPair}
-            />
-            <span>vs.</span>
-            <PokemonListing
-              pokemon={pokemonPair?.second}
-              vote={() => handleVote(pokemonPair?.second.id)}
-              disabled={pokemonPairLoading}
-              loadingNext={fetchNextPokemonPair}
-            />
-          </Paper>
-        }
+        <Paper
+          className="flex justify-evenly items-center w-full max-w-[620px] p-2"
+          withBorder
+          radius="lg"
+        >
+          <PokemonListing
+            pokemon={pokemonPair?.first}
+            vote={() => handleVote(pokemonPair?.first.id)}
+            disabled={pokemonPairLoading}
+            loadingNext={fetchNextPokemonPair}
+          />
+          <span>vs.</span>
+          <PokemonListing
+            pokemon={pokemonPair?.second}
+            vote={() => handleVote(pokemonPair?.second.id)}
+            disabled={pokemonPairLoading}
+            loadingNext={fetchNextPokemonPair}
+          />
+        </Paper>
         {session ? (
           <p>&nbsp;</p>
         ) : (
