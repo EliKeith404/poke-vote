@@ -10,6 +10,10 @@ import { useSession } from 'next-auth/react';
 import { Category } from '@prisma/client';
 import getRandomCategory from '../utils/getRandomCategory';
 
+// Pokemon Server Output Types
+type PokemonPairType = inferQueryOutput<'poke.get-pokemon-pair'>;
+type PokemonType = inferQueryOutput<'poke.get-pokemon-pair'>['first'];
+
 const VoteHeader = () => {
   return (
     <Head>
@@ -81,7 +85,9 @@ const colorMap = (category: Category) => {
 const VotePage: NextPage = () => {
   // Vote category, typing pulled from schema.prisma file
   const [category, setCategory] = useState<Category>(Category.roundest);
-  const [pokemonPair, setPokemonPair] = useState<PokemonObject | null>(null);
+  const [pokemonPair, setPokemonPair] = useState<PokemonPairType | null>(null);
+  const [fetchNextPokemonPair, setFetchNextPokemonPair] = useState(false);
+  const [pokemonPairLoading, setPokemonPairLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const { data: session } = useSession();
 
@@ -96,10 +102,14 @@ const VotePage: NextPage = () => {
   );
 
   useEffect(() => {
-    const setNextPokemonPair = (): void => {
+    const transferPokemonPair = (): void => {
       if (nextPokemonPair) {
-        setPokemonPair(nextPokemonPair);
-        refetch();
+        setTimeout(() => {
+          setPokemonPair(nextPokemonPair);
+          refetch();
+          setFetchNextPokemonPair(false);
+          setPokemonPairLoading(false);
+        }, 300);
       }
     };
 
@@ -108,30 +118,38 @@ const VotePage: NextPage = () => {
       const userCategory = session.user.assignedCategory || getRandomCategory();
 
       setCategory(userCategory);
-      setMounted(true);
     } else if (!session && !mounted) {
       refetchCategory();
-      setMounted(true);
     }
 
-    if (pokemonPair == null && nextPokemonPair) {
-      setNextPokemonPair();
+    // If a request to load another pair comes in, set the preloaded pokemon as current and refetch
+    if (fetchNextPokemonPair && nextPokemonPair) {
+      transferPokemonPair();
     }
-  }, [session, pokemonPair, nextPokemonPair]);
 
-  const refetchCategory = (): void => {
+    // When the pokemon pair is loaded, stop displaying loading state
+    if (pokemonPair) {
+      setPokemonPairLoading(false);
+    } else {
+      setPokemonPairLoading(true);
+    }
+
+    setMounted(true);
+  }, [session, pokemonPair, nextPokemonPair, mounted, fetchNextPokemonPair]);
+
+  function refetchCategory(): void {
     const randomizedCategory = getRandomCategory();
     if (randomizedCategory === category) return refetchCategory();
 
     setCategory(randomizedCategory);
-    setPokemonPair(null);
-  };
+    setFetchNextPokemonPair(true);
+  }
 
   // Vote Handler
   const voteMutation = trpc.useMutation(['poke.cast-vote']);
 
-  const handleVote = (selected: number) => {
-    if (!pokemonPair) return; // Early escape if pokemon could not be fetched
+  const handleVote = (selected: number | undefined) => {
+    if (!pokemonPair || !selected) return; // Early escape if pokemon could not be fetched
 
     if (selected === pokemonPair.first.id) {
       voteMutation.mutate({
@@ -149,11 +167,8 @@ const VotePage: NextPage = () => {
       });
     }
 
-    setPokemonPair(null);
+    setFetchNextPokemonPair(true);
   };
-
-  // If the vote is loading or data is still being retrieved, disable buttons
-  const fetchingNext = !pokemonPair;
 
   /////////////////////////////
   // Begin HTML Rendering
@@ -174,7 +189,36 @@ const VotePage: NextPage = () => {
           ?
         </h1>
         <Space h={25} />
-        {!session && (
+        {/* 
+        <button onClick={() => setPokemonPairLoading((prev) => !prev)}>
+          Toggles Disabled
+        </button>
+        */}
+
+        {
+          <Paper
+            className="flex justify-evenly items-center w-full max-w-[620px] p-2"
+            withBorder
+            radius="lg"
+          >
+            <PokemonListing
+              pokemon={pokemonPair?.first}
+              vote={() => handleVote(pokemonPair?.first.id)}
+              disabled={pokemonPairLoading}
+              loadingNext={fetchNextPokemonPair}
+            />
+            <span>vs.</span>
+            <PokemonListing
+              pokemon={pokemonPair?.second}
+              vote={() => handleVote(pokemonPair?.second.id)}
+              disabled={pokemonPairLoading}
+              loadingNext={fetchNextPokemonPair}
+            />
+          </Paper>
+        }
+        {session ? (
+          <p>&nbsp;</p>
+        ) : (
           <p className="text-center">
             Don&apos;t like the category?{' '}
             <button
@@ -185,25 +229,6 @@ const VotePage: NextPage = () => {
             </button>
           </p>
         )}
-        {pokemonPair && (
-          <Paper
-            className="flex justify-evenly items-center w-full max-w-[620px] p-2"
-            withBorder
-            radius="lg"
-          >
-            <PokemonListing
-              pokemon={pokemonPair.first}
-              vote={() => handleVote(pokemonPair.first.id)}
-              disabled={fetchingNext}
-            />
-            <span>vs.</span>
-            <PokemonListing
-              pokemon={pokemonPair.second}
-              vote={() => handleVote(pokemonPair.second.id)}
-              disabled={fetchingNext}
-            />
-          </Paper>
-        )}
       </Container>
     </>
   );
@@ -212,42 +237,48 @@ const VotePage: NextPage = () => {
 export default VotePage;
 
 // Pokemon Listing Component
-type PokemonType = inferQueryOutput<'poke.get-pokemon-pair'>['first'];
-type PokemonObject = inferQueryOutput<'poke.get-pokemon-pair'>;
-
 interface PokemonListing {
-  pokemon: PokemonType;
+  pokemon: PokemonType | undefined;
   vote: () => void;
   disabled: boolean;
+  loadingNext: boolean;
 }
 
-const PokemonListing = ({ pokemon, vote, disabled }: PokemonListing) => {
-  //disabled = true;
+const PokemonListing = ({
+  pokemon,
+  vote,
+  disabled,
+  loadingNext,
+}: PokemonListing) => {
   return (
     <div className={`flex flex-col justify-center items-center`}>
       <div
-        className={`flex flex-col justify-center items-center transition-opacity ${
-          disabled && 'animate-pulse'
-        }`}
+        className={`flex flex-col justify-center items-center transition-all ease-in-out duration-300 
+        ${loadingNext ? 'opacity-0' : 'opacity-100'} 
+        ${disabled && 'animate-pulse'}`}
       >
+        {/* Header */}
         {disabled ? (
-          <div className="w-40 h-5 bg-slate-700 rounded-lg my-[1.45rem]" />
+          <div className="w-40 h-5 bg-slate-700 rounded-lg my-[1.28rem]" />
         ) : (
-          <h2 className="text-sm md:text-xl capitalize">{pokemon.name}</h2>
+          <h2 className="text-sm md:text-xl capitalize">{pokemon?.name}</h2>
         )}
-        <div className="py-5 animate-fade-in">
-          {disabled ? (
-            <div className="w-[192px] h-[192px] bg-slate-700 rounded-lg" />
-          ) : (
-            <Image
-              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
-              alt={`${pokemon.name}'s sprite image`}
-              width={192}
-              height={192}
-              style={{ imageRendering: 'pixelated' }}
-            />
-          )}
-        </div>
+        {/* Image */}
+        {disabled ? (
+          <div className="w-[192px] h-[192px]">
+            <div className="h-[90%] bg-slate-700 rounded-lg transition-all" />
+          </div>
+        ) : (
+          <Image
+            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon?.id}.png`}
+            alt={`${pokemon?.name}'s sprite image`}
+            width={192}
+            height={192}
+            style={{ imageRendering: 'pixelated' }}
+            className={``}
+            priority
+          />
+        )}
       </div>
 
       <Button
@@ -255,7 +286,7 @@ const PokemonListing = ({ pokemon, vote, disabled }: PokemonListing) => {
         color="yellow"
         radius="md"
         onClick={() => vote()}
-        disabled={disabled}
+        disabled={loadingNext || disabled}
       >
         Vote
       </Button>
