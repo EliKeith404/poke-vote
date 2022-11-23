@@ -18,11 +18,11 @@ Go vote at https://www.pokevote.com/ !
 
 - [x] Host website
 - [x] Get a custom domain
-- [ ] Skeleton/Fallback/Loading page
+- [x] Skeleton/Fallback/Loading page
 - [x] Custom 404 page
 - [x] Discord Auth
-- [x] Admin Dashboard
-- [ ] More Vote Categories
+- [ ] Admin Dashboard
+- [x] More Vote Categories
 - [ ] Tournament Bracket Generator
 - [x] Meta tags and cards on social sites
 - [x] Accessibility Improvements
