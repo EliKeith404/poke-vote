@@ -132,10 +132,10 @@ const VotePage: NextPage = () => {
       const userCategory = session.user.assignedCategory || getRandomCategory();
 
       setCategory(userCategory);
-    } else if (!session) {
+    } else if (!session && !mounted) {
       refetchCategory();
     }
-  }, [session]);
+  }, [session, mounted]);
 
   function refetchCategory(): void {
     const randomizedCategory = getRandomCategory();
