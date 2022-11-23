@@ -31,6 +31,29 @@ export const pokeRouter = createRouter()
       return pokemon;
     },
   })
+  .query('get-image', {
+    input: z.object({
+      id: z.number(),
+    }),
+    async resolve({ input }) {
+      const data = await fetch(
+        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${input.id}.png`
+      );
+      data.headers.set('Cache-Control', 'max-age=31536000, immutable');
+      return data;
+    },
+  })
+  .query('get-all', {
+    async resolve() {
+      const allPokemon = await prisma.pokemon.findMany({
+        select: {
+          name: true,
+        },
+      });
+
+      return allPokemon;
+    },
+  })
   .query('get-ranking', {
     input: z.object({
       category: z.nativeEnum(Category),
@@ -83,22 +106,16 @@ export const pokeRouter = createRouter()
     input: z.object({
       submittedById: z.string().optional(),
       category: z.nativeEnum(Category),
-      votedFor: z.object({
-        id: z.number(),
-        name: z.string(),
-      }),
-      votedAgainst: z.object({
-        id: z.number(),
-        name: z.string(),
-      }),
+      votedFor: z.number(),
+      votedAgainst: z.number(),
     }),
     async resolve({ input }) {
       const voteInDb = await prisma.vote.create({
         data: {
           submittedById: input.submittedById,
           category: input.category,
-          votedForId: input.votedFor.id,
-          votedAgainstId: input.votedAgainst.id,
+          votedForId: input.votedFor,
+          votedAgainstId: input.votedAgainst,
         },
       });
       // TODO: Calculate vote % and vote weight here to reduce data fetch.

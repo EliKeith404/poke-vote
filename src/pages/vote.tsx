@@ -1,18 +1,28 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import type React from 'react';
-import { inferQueryOutput, trpc } from '../utils/trpc';
-import { Button, Container, Paper, Space } from '@mantine/core';
+import { trpc } from '../utils/trpc';
+import {
+  Button,
+  Container,
+  Image as MantineImage,
+  Paper,
+  Space,
+} from '@mantine/core';
 import { useSession } from 'next-auth/react';
 
 import { Category } from '@prisma/client';
 import getRandomCategory from '../utils/getRandomCategory';
+import { getPokemonImage } from '../utils/getPokemonImage';
+import { getOptionsForVote } from '../utils/getRandomPokemon';
+import { ALL_POKEMON } from '../utils/allPokemon';
 
 // Pokemon Server Output Types
-type PokemonPairType = inferQueryOutput<'poke.get-pokemon-pair'>;
-type PokemonType = inferQueryOutput<'poke.get-pokemon-pair'>['first'];
+interface PokemonType {
+  firstId: number;
+  secondId: number;
+}
 
 const VoteHeader = () => {
   return (
@@ -82,97 +92,96 @@ const colorMap = (category: Category) => {
   return color;
 };
 
+const fetchedImages: Set<number> = new Set();
+
 const VotePage: NextPage = () => {
   // Vote category, typing pulled from schema.prisma file
   const [category, setCategory] = useState<Category>(Category.roundest);
-  const [pokemonPair, setPokemonPair] = useState<PokemonPairType | null>(null);
-  const [fetchNextPokemonPair, setFetchNextPokemonPair] = useState(true);
-  const [pokemonPairLoading, setPokemonPairLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
+  const [currentPair, setCurrentPair] = useState<PokemonType>(
+    getOptionsForVote()
+  );
+  const [nextPair, setNextPair] = useState<PokemonType>(getOptionsForVote());
+  const [mounted, setMounted] = useState<boolean>(false);
+
   const { data: session } = useSession();
 
-  // Grab 2 Pokemon from database
-  const { data: nextPokemonPair, refetch } = trpc.useQuery(
-    ['poke.get-pokemon-pair'],
-    {
-      refetchInterval: false,
-      refetchOnReconnect: false,
-      refetchOnWindowFocus: false,
-    }
-  );
-
   useEffect(() => {
-    const transferPokemonPair = (): void => {
-      if (nextPokemonPair) {
-        setTimeout(() => {
-          setPokemonPair(nextPokemonPair);
-          refetch();
-          setFetchNextPokemonPair(false);
-          setPokemonPairLoading(false);
-        }, 300);
-      }
-    };
+    if (!mounted) setMounted(true);
+  }, [mounted]);
 
+  // Store current images
+  useEffect(() => {
+    Object.values(currentPair).forEach((id) => {
+      fetchedImages.add(id);
+    });
+  }, [currentPair]);
+
+  // Pre-fetch images for nextPair
+  useEffect(() => {
+    Object.values(nextPair)
+      .filter((id) => !fetchedImages.has(id))
+      .forEach((id) => {
+        new Image().src = getPokemonImage(id);
+      });
+  }, [nextPair]);
+
+  // Category check
+  useEffect(() => {
     if (session?.user) {
       // If a user is logged in, use their assigned category, if no category, generate one
       const userCategory = session.user.assignedCategory || getRandomCategory();
 
       setCategory(userCategory);
-    } else if (!session && !mounted) {
+    } else if (!session) {
       refetchCategory();
     }
-
-    // If a request to load another pair comes in, set the preloaded pokemon as current and refetch
-    if (fetchNextPokemonPair && nextPokemonPair) {
-      transferPokemonPair();
-    }
-
-    // When the pokemon pair is loaded, stop displaying loading state
-    if (pokemonPair) {
-      setPokemonPairLoading(false);
-    } else {
-      setPokemonPairLoading(true);
-    }
-
-    setMounted(true);
-  }, [session, pokemonPair, nextPokemonPair, mounted, fetchNextPokemonPair]);
+  }, [session]);
 
   function refetchCategory(): void {
     const randomizedCategory = getRandomCategory();
     if (randomizedCategory === category) return refetchCategory();
 
     setCategory(randomizedCategory);
-    setFetchNextPokemonPair(true);
+
+    // Set Current Pokemon to prefetched Pokemon
+    setCurrentPair(nextPair);
+
+    // Refetch next pair
+    setNextPair(getOptionsForVote());
   }
 
   // Vote Handler
   const voteMutation = trpc.useMutation(['poke.cast-vote']);
 
   const handleVote = (selected: number | undefined) => {
-    if (!pokemonPair || !selected) return; // Early escape if pokemon could not be fetched
+    if (!currentPair || !selected) return; // Early escape if pokemon could not be fetched
 
-    if (selected === pokemonPair.first.id) {
+    if (selected === currentPair.firstId) {
       voteMutation.mutate({
         submittedById: session?.user?.id,
         category: category,
-        votedFor: pokemonPair.first,
-        votedAgainst: pokemonPair.second,
+        votedFor: currentPair.firstId,
+        votedAgainst: currentPair.secondId,
       });
     } else {
       voteMutation.mutate({
         submittedById: session?.user?.id,
         category: category,
-        votedFor: pokemonPair.second,
-        votedAgainst: pokemonPair.first,
+        votedFor: currentPair.firstId,
+        votedAgainst: currentPair.secondId,
       });
     }
+    // Set Current Pokemon to prefetched Pokemon
+    setCurrentPair(nextPair);
 
-    setFetchNextPokemonPair(true);
+    // Refetch next pair
+    setNextPair(getOptionsForVote());
   };
 
   /////////////////////////////
   // Begin HTML Rendering
 
+  const isLoading = !currentPair || !mounted; // || voteMutation.isLoading;
   return (
     <>
       <VoteHeader />
@@ -195,17 +204,15 @@ const VotePage: NextPage = () => {
           radius="lg"
         >
           <PokemonListing
-            pokemon={pokemonPair?.first}
-            vote={() => handleVote(pokemonPair?.first.id)}
-            disabled={pokemonPairLoading}
-            loadingNext={fetchNextPokemonPair}
+            pokemonId={currentPair.firstId}
+            vote={() => handleVote(currentPair.firstId)}
+            disabled={isLoading}
           />
           <span>vs.</span>
           <PokemonListing
-            pokemon={pokemonPair?.second}
-            vote={() => handleVote(pokemonPair?.second.id)}
-            disabled={pokemonPairLoading}
-            loadingNext={fetchNextPokemonPair}
+            pokemonId={currentPair.secondId}
+            vote={() => handleVote(currentPair.secondId)}
+            disabled={isLoading}
           />
         </Paper>
         {session ? (
@@ -230,30 +237,28 @@ export default VotePage;
 
 // Pokemon Listing Component
 interface PokemonListing {
-  pokemon: PokemonType | undefined;
+  pokemonId: number;
   vote: () => void;
   disabled: boolean;
-  loadingNext: boolean;
 }
 
-const PokemonListing = ({
-  pokemon,
-  vote,
-  disabled,
-  loadingNext,
-}: PokemonListing) => {
+const PokemonListing = ({ pokemonId, vote, disabled }: PokemonListing) => {
   return (
-    <div className={`flex flex-col justify-center items-center`}>
+    <div
+      key={pokemonId}
+      className={`flex flex-col justify-center items-center`}
+    >
       <div
-        className={`flex flex-col justify-center items-center transition-all ease-in-out duration-300 
-        ${loadingNext ? 'opacity-0' : 'opacity-100'} 
+        className={`flex flex-col justify-center items-center transition-all ease-in-out duration-300 animate-fade-in
         ${disabled && 'animate-pulse'}`}
       >
-        {/* Header */}
+        {/* Pokemon Name */}
         {disabled ? (
           <div className="w-40 h-5 bg-slate-700 rounded-lg my-[1.28rem]" />
         ) : (
-          <h2 className="text-sm md:text-xl capitalize">{pokemon?.name}</h2>
+          <h2 className="text-sm md:text-xl capitalize">
+            {ALL_POKEMON[pokemonId - 1]}
+          </h2>
         )}
         {/* Image */}
         {disabled ? (
@@ -261,15 +266,16 @@ const PokemonListing = ({
             <div className="h-[90%] bg-slate-700 rounded-lg transition-all" />
           </div>
         ) : (
-          <Image
-            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon?.id}.png`}
-            alt={`${pokemon?.name}'s sprite image`}
-            width={192}
-            height={192}
-            style={{ imageRendering: 'pixelated' }}
-            className={``}
-            priority
-          />
+          <>
+            <MantineImage
+              src={getPokemonImage(pokemonId)}
+              alt={`${ALL_POKEMON[pokemonId - 1]}'s sprite image`}
+              width={192}
+              height={192}
+              style={{ imageRendering: 'pixelated' }}
+              //priority={true}
+            />
+          </>
         )}
       </div>
 
@@ -278,7 +284,7 @@ const PokemonListing = ({
         color="yellow"
         radius="md"
         onClick={() => vote()}
-        disabled={loadingNext || disabled}
+        disabled={disabled}
       >
         Vote
       </Button>

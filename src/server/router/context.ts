@@ -1,9 +1,9 @@
 // src/server/router/context.ts
-import * as trpc from "@trpc/server";
-import * as trpcNext from "@trpc/server/adapters/next";
-import { Session } from "next-auth";
-import { getServerAuthSession } from "../../server/common/get-server-auth-session";
-import { prisma } from "../db/client";
+import * as trpc from '@trpc/server';
+import * as trpcNext from '@trpc/server/adapters/next';
+import { Session } from 'next-auth';
+import { getServerAuthSession } from '../../server/common/get-server-auth-session';
+import { prisma } from '../db/client';
 
 type CreateContextOptions = {
   session: Session | null;
@@ -25,16 +25,20 @@ export const createContextInner = async (opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  **/
 export const createContext = async (
-  opts: trpcNext.CreateNextContextOptions,
+  opts: trpcNext.CreateNextContextOptions
 ) => {
   const { req, res } = opts;
 
   // Get the session from the server using the unstable_getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
-
-  return await createContextInner({
+  const ctx = await createContextInner({
     session,
   });
+  return {
+    req,
+    res,
+    ...ctx,
+  };
 };
 
 type Context = trpc.inferAsyncReturnType<typeof createContext>;
@@ -47,7 +51,7 @@ export const createRouter = () => trpc.router<Context>();
 export function createProtectedRouter() {
   return createRouter().middleware(({ ctx, next }) => {
     if (!ctx.session || !ctx.session.user) {
-      throw new trpc.TRPCError({ code: "UNAUTHORIZED" });
+      throw new trpc.TRPCError({ code: 'UNAUTHORIZED' });
     }
     return next({
       ctx: {
