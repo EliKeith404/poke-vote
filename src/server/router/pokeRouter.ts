@@ -62,7 +62,6 @@ export const pokeRouter = createRouter()
       const pokemonVotes = await prisma.pokemon.findMany({
         select: {
           id: true,
-          name: true,
           _count: {
             select: {
               votesFor: {

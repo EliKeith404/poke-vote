@@ -4,6 +4,8 @@ import { NativeSelect, Paper } from '@mantine/core';
 import Head from 'next/head';
 import { Category } from '@prisma/client';
 import { inferQueryOutput, trpc } from '../utils/trpc';
+import { getPokemonImage } from '../utils/getPokemonImage';
+import { ALL_POKEMON } from '../utils/allPokemon';
 
 // Get type of object returned from the database
 type PokemonRankingResult = inferQueryOutput<'poke.get-ranking'>;
@@ -22,7 +24,6 @@ const calcTopTenPokemon = (pokemonList: PokemonRankingResult) => {
     const votePercent = calcVotePercent(votesFor, votesAgainst);
 
     const pokeObject = {
-      name: pokemon.name,
       id: pokemon.id,
       votesFor: votesFor,
       votesAgainst: votesAgainst,
@@ -151,8 +152,8 @@ const PokemonListItem = ({
       <span className="text-sm md:text-lg m-auto">#{rank}</span>
       <div className="mx-auto">
         <Image
-          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
-          alt={`${pokemon.name}'s Sprite Image`}
+          src={getPokemonImage(pokemon.id)}
+          alt={`${ALL_POKEMON[pokemon.id - 1]}'s Sprite Image`}
           width={112}
           height={112}
           style={{ imageRendering: 'pixelated' }}
@@ -160,7 +161,9 @@ const PokemonListItem = ({
       </div>
       <div className="flex flex-col items-center m-auto">
         <span className="text-xs">{pokemon.id}</span>
-        <span className="capitalize text-sm md:text-lg">{pokemon.name}</span>
+        <span className="capitalize text-sm md:text-lg">
+          {ALL_POKEMON[pokemon.id - 1]}
+        </span>
       </div>
       <p className="text-sm md:text-lg px-5 m-auto">
         {pokemon.votePercent.toFixed(2)}%
