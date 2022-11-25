@@ -167,8 +167,8 @@ const VotePage: NextPage = () => {
       voteMutation.mutate({
         submittedById: session?.user?.id,
         category: category,
-        votedFor: currentPair.firstId,
-        votedAgainst: currentPair.secondId,
+        votedFor: currentPair.secondId,
+        votedAgainst: currentPair.firstId,
       });
     }
     // Set Current Pokemon to prefetched Pokemon
