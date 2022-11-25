@@ -185,7 +185,7 @@ const VotePage: NextPage = () => {
   return (
     <>
       <VoteHeader />
-      <Container className="h-full flex flex-col justify-center items-center px-2">
+      <Container className="h-full w-full flex flex-col justify-center items-center px-2">
         <h1 className="text-xl text-center">
           Which Pokemon is{' '}
           <span
@@ -199,7 +199,7 @@ const VotePage: NextPage = () => {
         </h1>
         <Space h={25} />
         <Paper
-          className="flex justify-evenly items-center w-full max-w-[620px] p-2"
+          className="flex justify-evenly items-center max-w-[620px] min-w-[230px] min-h-[275px] w-full p-2"
           withBorder
           radius="lg"
         >
@@ -243,51 +243,42 @@ interface PokemonListing {
 }
 
 const PokemonListing = ({ pokemonId, vote, disabled }: PokemonListing) => {
+  //disabled = true;
   return (
-    <div
-      key={pokemonId}
-      className={`flex flex-col justify-center items-center`}
-    >
+    <div key={pokemonId} className={`grid grid-rows-6 w-full h-full`}>
       <div
-        className={`flex flex-col justify-center items-center transition-all ease-in-out duration-300 animate-fade-in
+        className={`row-span-5 flex flex-col justify-center items-center m-[-1.28rem] transition-all ease-in-out duration-300 animate-fade-in
         ${disabled && 'animate-pulse'}`}
       >
         {/* Pokemon Name */}
         {disabled ? (
-          <div className="w-40 h-5 bg-slate-700 rounded-lg my-[1.28rem]" />
+          <div className="px-[30%] py-[4%] my-4 bg-slate-700 rounded-lg" />
         ) : (
-          <h2 className="text-sm md:text-xl capitalize">
-            {ALL_POKEMON[pokemonId - 1]}
-          </h2>
+          <h2 className="text-lg capitalize">{ALL_POKEMON[pokemonId - 1]}</h2>
         )}
         {/* Image */}
-        {disabled ? (
-          <div className="w-[192px] h-[192px]">
-            <div className="h-[90%] bg-slate-700 rounded-lg transition-all" />
-          </div>
-        ) : (
-          <>
+        <div className="h-[30vw] w-[30vw] max-w-[250px] max-h-[250px] min-w-[80px] min-h-[80px]">
+          {disabled ? (
+            <div className="h-[90%] mt-5 bg-slate-700 rounded-lg transition-all" />
+          ) : (
             <MantineImage
               src={getPokemonImage(pokemonId)}
               alt={`${ALL_POKEMON[pokemonId - 1]}'s sprite image`}
-              width={192}
-              height={192}
               style={{ imageRendering: 'pixelated' }}
-              //priority={true}
             />
-          </>
-        )}
+          )}
+        </div>
       </div>
-
-      <Button
-        className="mb-2"
-        color="yellow"
-        radius="md"
-        onClick={() => vote()}
-        disabled={disabled}
-      >
-        Vote
-      </Button>
+      <div className="row-span-1 flex justify-center items-center">
+        <Button
+          color="yellow"
+          radius="md"
+          onClick={() => vote()}
+          disabled={disabled}
+        >
+          Vote
+        </Button>
+      </div>
     </div>
   );
 };
