@@ -245,9 +245,9 @@ interface PokemonListing {
 const PokemonListing = ({ pokemonId, vote, disabled }: PokemonListing) => {
   //disabled = true;
   return (
-    <div key={pokemonId} className={`grid grid-rows-6 w-full h-full`}>
+    <div key={pokemonId} className={`grid grid-rows-5 w-full h-full`}>
       <div
-        className={`row-span-5 flex flex-col justify-center items-center m-[-1.28rem] transition-all ease-in-out duration-300 animate-fade-in
+        className={`row-span-4 flex flex-col justify-center items-center transition-all ease-in-out duration-300 animate-fade-in w-full h-full
         ${disabled && 'animate-pulse'}`}
       >
         {/* Pokemon Name */}
@@ -257,7 +257,7 @@ const PokemonListing = ({ pokemonId, vote, disabled }: PokemonListing) => {
           <h2 className="text-lg capitalize">{ALL_POKEMON[pokemonId - 1]}</h2>
         )}
         {/* Image */}
-        <div className="h-[30vw] w-[30vw] max-w-[250px] max-h-[250px] min-w-[80px] min-h-[80px]">
+        <div className="h-[40vw] w-[40vw] max-w-[225px] max-h-[225px] min-w-[80px] min-h-[80px]">
           {disabled ? (
             <div className="h-[90%] mt-5 bg-slate-700 rounded-lg transition-all" />
           ) : (
