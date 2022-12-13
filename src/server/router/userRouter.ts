@@ -42,4 +42,18 @@ export const userRouter = createRouter()
 
       return user;
     },
+  })
+  .query('get-votes', {
+    input: z.object({
+      id: z.string(),
+    }),
+    async resolve({ input }) {
+      const userVoteCount = await prisma.vote.count({
+        where: {
+          submittedById: input.id,
+        },
+      });
+
+      return userVoteCount;
+    },
   });
