@@ -9,14 +9,14 @@ declare module 'next-auth' {
     user?: {
       id: string;
       role: Role;
-      assignedCategory: Category;
+      assignedCategory: Category | null;
       votes: Vote[];
     } & DefaultSession['user'];
   }
 
   interface User {
     role: Role;
-    assignedCategory: Category;
+    assignedCategory: Category | null;
     votes: Vote[];
   }
 }
