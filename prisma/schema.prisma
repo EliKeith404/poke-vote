@@ -3,17 +3,13 @@
 
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["referentialIntegrity", "filteredRelationCount"]
+    previewFeatures = ["filteredRelationCount"]
 }
 
 datasource db {
-    provider             = "mysql"
-    url                  = env("DATABASE_URL")
-    referentialIntegrity = "prisma"
-}
-
-model Example {
-    id String @id @default(cuid())
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
 }
 
 model Pokemon {
@@ -34,7 +30,35 @@ model Vote {
     votedFor       Pokemon  @relation("votesFor", fields: [votedForId], references: [id])
     votedAgainstId Int
     votedAgainst   Pokemon  @relation("votesAgainst", fields: [votedAgainstId], references: [id])
+
+    @@index([submittedById])
+    @@index([votedForId])
+    @@index([votedAgainstId])
 }
+
+model Tournament {
+    id           String   @id @default(cuid())
+    createdAt    DateTime @default(now())
+    name         String
+    active       Boolean  @default(true)
+    winnerId     String?
+    winner       User?    @relation("winner", fields: [winnerId], references: [id], onDelete: Cascade)
+    participants User[]
+
+    @@index([winnerId])
+}
+
+//model UsersInTournament {
+//    user         User       @relation(fields: [userId], references: [id])
+//    userId       String
+//    tournament   Tournament @relation(fields: [tournamentId], references: [id])
+//    tournamentId String
+//    assignedAt   DateTime   @default(now())
+
+//    @@id([userId, tournamentId])
+//    @@index([userId])
+//@@index([tournamentId])
+//}
 
 // Necessary for Next auth
 model Account {
@@ -53,6 +77,7 @@ model Account {
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
+    @@index([userId])
 }
 
 model Session {
@@ -61,19 +86,23 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
 }
 
 model User {
-    id               String    @id @default(cuid())
-    name             String?
-    email            String?   @unique
-    emailVerified    DateTime?
-    image            String?
-    role             Role      @default(USER)
-    assignedCategory Category  @default(roundest)
-    votes            Vote[]
-    accounts         Account[]
-    sessions         Session[]
+    id                 String       @id @default(cuid())
+    name               String?
+    email              String?      @unique
+    emailVerified      DateTime?
+    image              String?
+    role               Role         @default(USER)
+    assignedCategory   Category?
+    votes              Vote[]
+    tournamentsEntered Tournament[]
+    tournamentsWon     Tournament[] @relation("winner")
+    accounts           Account[]
+    sessions           Session[]
 }
 
 model VerificationToken {
