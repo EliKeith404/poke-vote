@@ -129,7 +129,7 @@ const VotePage: NextPage = () => {
   useEffect(() => {
     if (session?.user) {
       // If a user is logged in, use their assigned category, if no category, generate one
-      const userCategory = session.user.assignedCategory || getRandomCategory();
+      const userCategory = session.user.assignedCategory ?? getRandomCategory();
 
       setCategory(userCategory);
     } else if (!session && !mounted) {
@@ -215,7 +215,7 @@ const VotePage: NextPage = () => {
             disabled={isLoading}
           />
         </Paper>
-        {session ? (
+        {session?.user?.assignedCategory ? (
           <p>&nbsp;</p>
         ) : (
           <p className="text-center">
