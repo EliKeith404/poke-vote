@@ -17,6 +17,8 @@ const calcVotePercent = (votesFor: number, votesAgainst: number) => {
 };
 
 const calcTopTenPokemon = (pokemonList: PokemonRankingResult) => {
+  if (!pokemonList) return [];
+
   const pokeListRanked = [];
 
   for (const pokemon of pokemonList) {
@@ -74,6 +76,7 @@ const Results = () => {
   }, [pokemonVoteCount]);
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    e.preventDefault();
     setSelectedCategory(e.currentTarget.value as keyof typeof Category);
     refetch();
   };
