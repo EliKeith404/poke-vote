@@ -1,5 +1,5 @@
 import { Avatar, Container, Group } from '@mantine/core';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GoBook, GoGear } from 'react-icons/go';
 import { IUser } from '../../types/user';
 

@@ -16,8 +16,8 @@ model Pokemon {
     id           Int    @id
     name         String
     spriteUrl    String
-    votesFor     Vote[] @relation("votesFor")
-    votesAgainst Vote[] @relation("votesAgainst")
+    votesFor     Vote[] @relation("votedFor")
+    votesAgainst Vote[] @relation("votedAgainst")
 }
 
 model Vote {
@@ -27,9 +27,9 @@ model Vote {
     submittedBy    User?    @relation(fields: [submittedById], references: [id])
     category       Category
     votedForId     Int
-    votedFor       Pokemon  @relation("votesFor", fields: [votedForId], references: [id])
+    votedFor       Pokemon  @relation("votedFor", fields: [votedForId], references: [id])
     votedAgainstId Int
-    votedAgainst   Pokemon  @relation("votesAgainst", fields: [votedAgainstId], references: [id])
+    votedAgainst   Pokemon  @relation("votedAgainst", fields: [votedAgainstId], references: [id])
 
     @@index([submittedById])
     @@index([votedForId])

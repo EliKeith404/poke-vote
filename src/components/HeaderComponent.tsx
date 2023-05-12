@@ -3,6 +3,7 @@ import {
   Avatar,
   Burger,
   Button,
+  ChevronIcon,
   Container,
   Group,
   Header,
@@ -13,8 +14,16 @@ import {
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React from 'react';
-import { GoPerson, GoGear, GoSignOut } from 'react-icons/go';
+import {
+  GoPerson,
+  GoGear,
+  GoSignOut,
+  GoDashboard,
+  GoGitBranch,
+  GoPencil,
+} from 'react-icons/go';
 import { FaDiscord } from 'react-icons/fa';
+import { Role } from '@prisma/client';
 
 const HeaderComponent = ({
   opened,
@@ -48,6 +57,54 @@ const HeaderComponent = ({
                   Home
                 </Anchor>
               </Link>
+              {session?.user?.role === Role.ADMIN && (
+                <Menu>
+                  <Menu.Target>
+                    <Group
+                      spacing={2}
+                      px={16}
+                      className={'hover:underline cursor-pointer'}
+                    >
+                      <Text className={' text-white tracking-wider'}>
+                        Tournament
+                      </Text>
+                      <ChevronIcon />
+                    </Group>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Label>Tournament</Menu.Label>
+                    <Link href={'/tournament'} passHref>
+                      <Menu.Item
+                        icon={<GoGitBranch size={14} />}
+                        component="a"
+                        className="tracking-wider text-white"
+                      >
+                        View Bracket
+                      </Menu.Item>
+                    </Link>
+                    <Link href={'/tournament/register'} passHref>
+                      <Menu.Item
+                        icon={<GoPencil size={14} />}
+                        component="a"
+                        className="tracking-wider text-white"
+                      >
+                        Register
+                      </Menu.Item>
+                    </Link>
+                    <Menu.Divider />
+                    <Menu.Label>Admin</Menu.Label>
+                    <Link href={'/admin/dashboard'} passHref>
+                      <Menu.Item
+                        icon={<GoDashboard size={14} />}
+                        component="a"
+                        className="tracking-wider text-white"
+                      >
+                        Dashboard
+                      </Menu.Item>
+                    </Link>
+                  </Menu.Dropdown>
+                </Menu>
+              )}
               <Link href={'/vote'} passHref>
                 <Anchor
                   className="tracking-wider text-white py-7 px-4"
@@ -98,9 +155,14 @@ const HeaderComponent = ({
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Label>{`Welcome, ${session.user?.name}`}</Menu.Label>
-                  <Menu.Label>{`You are a ${session.user?.role}`}</Menu.Label>
-                  <Menu.Item icon={<GoPerson size={14} />}>Profile</Menu.Item>
+                  <Link href={`/user/${session.user?.id}`} passHref>
+                    <Menu.Item icon={<GoPerson size={14} />} component="a">
+                      Profile
+                    </Menu.Item>
+                  </Link>
+                  {/*
                   <Menu.Item icon={<GoGear size={14} />}>Settings</Menu.Item>
+                   */}
                   <Menu.Item
                     color={'red'}
                     icon={<GoSignOut size={14} />}

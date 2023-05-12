@@ -1,9 +1,9 @@
+import { Category } from '@prisma/client';
+
 export default function getVoteCategory() {
-  const category = localStorage.getItem('category');
+  const index = Math.floor(Math.random() * 5) + 1;
 
-  if (category) return category;
+  const randCat = Object.values(Category)[index];
 
-  const num = Math.floor(Math.random() * 5) + 1;
-
-  return num;
+  return randCat;
 }

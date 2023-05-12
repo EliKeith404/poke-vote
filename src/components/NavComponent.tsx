@@ -82,7 +82,7 @@ const NavComponent = ({
 
               {!session ? (
                 <Anchor
-                  className="xs:hidden flex items-center px-3 py-7 text-lg hover:bg-zinc-700"
+                  className="md:hidden flex items-center px-3 py-7 text-lg hover:bg-zinc-700"
                   onClick={() => signIn('discord')}
                 >
                   <FaDiscord size={18} className="mr-2" />
@@ -90,7 +90,7 @@ const NavComponent = ({
                 </Anchor>
               ) : (
                 <Anchor
-                  className="xs:hidden flex items-center px-3 py-7 text-lg text-red-600 hover:bg-red-900/20"
+                  className="md:hidden flex items-center px-3 py-7 text-lg text-red-600 hover:bg-red-900/20"
                   onClick={() => signOut()}
                 >
                   <GoSignOut size={18} className="mr-2" />
